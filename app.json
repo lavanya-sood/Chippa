@@ -1,0 +1,206 @@
+{
+  "expo": {
+    "name": "Chippa",
+    "slug": "Chippa",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "chippa",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/expo.icon"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "ios": {
+            "fonts": [
+              "./assets/fonts/Fredoka/static/Fredoka-Light.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka-Regular.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka-Medium.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka-SemiBold.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka-Bold.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Condensed-Light.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Condensed-Regular.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Condensed-Medium.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Condensed-SemiBold.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Condensed-Bold.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Expanded-Light.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Expanded-Regular.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Expanded-Medium.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Expanded-SemiBold.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_Expanded-Bold.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-Light.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-Regular.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-Medium.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-SemiBold.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-Bold.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-Light.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-Regular.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-Medium.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-SemiBold.ttf",
+              "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-Bold.ttf"
+            ]
+          },
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "Fredoka",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka-Light.ttf",
+                    "weight": 300
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka-Regular.ttf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka-Medium.ttf",
+                    "weight": 500
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka-SemiBold.ttf",
+                    "weight": 600
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka-Bold.ttf",
+                    "weight": 700
+                  }
+                ]
+              },
+              {
+                "fontFamily": "Fredoka Condensed",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Condensed-Light.ttf",
+                    "weight": 300
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Condensed-Regular.ttf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Condensed-Medium.ttf",
+                    "weight": 500
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Condensed-SemiBold.ttf",
+                    "weight": 600
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Condensed-Bold.ttf",
+                    "weight": 700
+                  }
+                ]
+              },
+              {
+                "fontFamily": "Fredoka Expanded",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Expanded-Light.ttf",
+                    "weight": 300
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Expanded-Regular.ttf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Expanded-Medium.ttf",
+                    "weight": 500
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Expanded-SemiBold.ttf",
+                    "weight": 600
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_Expanded-Bold.ttf",
+                    "weight": 700
+                  }
+                ]
+              },
+              {
+                "fontFamily": "Fredoka SemiCondensed",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-Light.ttf",
+                    "weight": 300
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-Regular.ttf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-Medium.ttf",
+                    "weight": 500
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-SemiBold.ttf",
+                    "weight": 600
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiCondensed-Bold.ttf",
+                    "weight": 700
+                  }
+                ]
+              },
+              {
+                "fontFamily": "Fredoka SemiExpanded",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-Light.ttf",
+                    "weight": 300
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-Regular.ttf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-Medium.ttf",
+                    "weight": 500
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-SemiBold.ttf",
+                    "weight": 600
+                  },
+                  {
+                    "path": "./assets/fonts/Fredoka/static/Fredoka_SemiExpanded-Bold.ttf",
+                    "weight": 700
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#208AEF",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 76
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
