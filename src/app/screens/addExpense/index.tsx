@@ -1,3 +1,5 @@
+import { useExpensesStore } from "@/state/index";
+import { Expense, Person } from "@/types/index";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -13,8 +15,6 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useExpensesStore from "../../../state/index";
-import { Expense, Person } from "../../../types/index";
 
 export default function AddExpense() {
   const router = useRouter();
@@ -84,7 +84,10 @@ export default function AddExpense() {
 
     const personId = generateShortId(peopleList.length);
 
-    setPeopleList((prev) => [...prev, { id: personId, name: personValue }]);
+    setPeopleList((prev) => [
+      ...prev,
+      { id: personId, name: personValue, expenses: [] },
+    ]);
     setNewPerson("");
     setIsAddingPerson(false);
   };

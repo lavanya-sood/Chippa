@@ -1,22 +1,4 @@
-import { create } from "zustand";
-import { Expense } from "../types/index";
+import useExpensesStore from "./expenses";
+import usePeopleStore from "./people";
 
-interface ExpensesStore {
-  expenses: Expense[];
-  addExpense: (expense: Expense) => void;
-  removeExpense: (expenseId: string) => void;
-}
-
-const useExpensesStore = create<ExpensesStore>((set) => ({
-  expenses: [],
-  addExpense: (newExpense) =>
-    set((state) => ({
-      expenses: [...state.expenses, newExpense],
-    })),
-  removeExpense: (expenseId: string) =>
-    set((state) => ({
-      expenses: state.expenses.filter((expense) => expense.id !== expenseId),
-    })),
-}));
-
-export default useExpensesStore;
+export { useExpensesStore, usePeopleStore };

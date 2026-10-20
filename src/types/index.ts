@@ -1,13 +1,14 @@
 export interface Person {
   name: string;
   id: string;
+  expenses: string[];
 }
 
 export interface Item {
   id: string;
   name: string;
   amount: number;
-  sharedBy: Person[];
+  sharedBy: string[];
   paidBy: string;
 }
 
@@ -18,4 +19,12 @@ export interface Expense {
   people: Person[];
   paidBy?: string;
   items: Item[];
+}
+
+export interface PersonBalance {
+  personId: string;
+  personName: string;
+  paid: number;
+  owes: number;
+  balance: number;
 }

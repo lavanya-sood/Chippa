@@ -1,6 +1,7 @@
+import { colors } from "@/foundation/colors";
+import { useExpensesStore } from "@/state/index";
 import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import useExpensesStore from "@/state/index";
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -9,8 +10,8 @@ export default function HomeScreen() {
   console.log(expenses);
 
   return (
-    <View style={styles.container}>
-      <Text style={{ fontFamily: "Fredoka", fontSize: 24, fontWeight: "600" }}>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={{ fontFamily: "Fredoka", fontSize: 28, fontWeight: "600" }}>
         Home
       </Text>
       <TouchableOpacity
@@ -19,7 +20,7 @@ export default function HomeScreen() {
       >
         <Text> Create expenses</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -28,6 +29,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: colors.background,
   },
   button: {
     backgroundColor: "pink",

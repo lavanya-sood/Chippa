@@ -3,8 +3,6 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TextStyle,
-  ViewStyle,
 } from "react-native";
 
 type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
@@ -68,11 +66,7 @@ export default function Button({
   );
 }
 
-type Styles = {
-  [key: string]: ViewStyle | TextStyle;
-};
-
-const styles = StyleSheet.create<Styles>({
+const styles = StyleSheet.create({
   base: {
     alignItems: "center",
     justifyContent: "center",
