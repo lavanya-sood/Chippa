@@ -1,7 +1,10 @@
+import Button from "@/components/Button";
 import { colors } from "@/foundation/colors";
+import { spacing } from "@/foundation/spacing";
+import { Typography } from "@/foundation/Typography";
 import { useExpensesStore } from "@/state/index";
 import { useRouter } from "expo-router";
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -11,15 +14,16 @@ export default function HomeScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={{ fontFamily: "Fredoka", fontSize: 28, fontWeight: "600" }}>
-        Home
-      </Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("/screens/addExpense")}
-      >
-        <Text> Create expenses</Text>
-      </TouchableOpacity>
+      <Typography variant="h1">Home</Typography>
+
+      <View style={styles.buttonGroup}>
+        <Button
+          variant="primary"
+          fullWidth
+          title={"Create Expense"}
+          onPress={() => router.push("/screens/addExpense")}
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -35,5 +39,12 @@ const styles = StyleSheet.create({
     backgroundColor: "pink",
     padding: 12,
     marginTop: 12,
+  },
+  buttonGroup: {
+    width: "100%",
+    paddingHorizontal: spacing.l,
+    alignItems: "center",
+    gap: 8,
+    flexDirection: "column",
   },
 });

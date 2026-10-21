@@ -1,11 +1,8 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-} from "react-native";
+import { colors } from "@/foundation/colors";
+import { ActivityIndicator, Pressable, Text } from "react-native";
+import { styles } from "./styles";
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
+type ButtonVariant = "primary" | "secondary" | "outline" | "text";
 type ButtonSize = "small" | "medium" | "large";
 
 type ButtonProps = {
@@ -49,7 +46,7 @@ export default function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === "primary" ? "#FFFFFF" : "#2563EB"}
+          color={variant === "primary" ? colors.white : colors.primary}
         />
       ) : (
         <Text
@@ -65,79 +62,3 @@ export default function Button({
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    borderRadius: 10,
-  },
-
-  primary: {
-    backgroundColor: "#2563EB",
-  },
-  secondary: {
-    backgroundColor: "#EFF6FF",
-  },
-  outline: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "#2563EB",
-  },
-  ghost: {
-    backgroundColor: "transparent",
-  },
-
-  small: {
-    minHeight: 32,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  medium: {
-    minHeight: 44,
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-  },
-  large: {
-    minHeight: 52,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-  },
-
-  label: {
-    fontWeight: "600",
-  },
-  primaryLabel: {
-    color: "#FFFFFF",
-  },
-  secondaryLabel: {
-    color: "#1D4ED8",
-  },
-  outlineLabel: {
-    color: "#2563EB",
-  },
-  ghostLabel: {
-    color: "#2563EB",
-  },
-
-  smallLabel: {
-    fontSize: 13,
-  },
-  mediumLabel: {
-    fontSize: 15,
-  },
-  largeLabel: {
-    fontSize: 17,
-  },
-
-  fullWidth: {
-    width: "100%",
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-});

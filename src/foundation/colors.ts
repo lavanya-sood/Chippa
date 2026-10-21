@@ -1,4 +1,8 @@
 export const colors = {
+  // Basics
+  white: "#ffffff",
+  black: "#000000",
+
   // Brand
   primary: "#476F62",
   primaryDark: "#35584E",
@@ -16,6 +20,7 @@ export const colors = {
   divider: "#EEE7DF",
 
   // Text
+  textBase: "#000000",
   textPrimary: "#263A35",
   textSecondary: "#66736E",
   textTertiary: "#9AA29E",

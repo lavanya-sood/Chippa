@@ -1,16 +1,25 @@
-import { Platform, ScrollView, StyleSheet, Text } from "react-native";
+import { useRouter } from "expo-router";
+import { FlatList, Platform, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { BottomTabInset, MaxContentWidth, Spacing } from "@/constants/theme";
+import Button from "@/components/Button";
+import { BottomTabInset, Spacing } from "@/constants/theme";
+import { colors } from "@/foundation/colors";
+import { spacing } from "@/foundation/spacing";
+import { Typography } from "@/foundation/Typography";
 import { useTheme } from "@/hooks/use-theme";
+import { usePeopleStore } from "@/state";
 
 export default function TabTwoScreen() {
   const safeAreaInsets = useSafeAreaInsets();
+  const router = useRouter();
+  const theme = useTheme();
+  const { people } = usePeopleStore();
+
   const insets = {
     ...safeAreaInsets,
     bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
   };
-  const theme = useTheme();
 
   const contentPlatformStyle = Platform.select({
     android: {
@@ -22,66 +31,35 @@ export default function TabTwoScreen() {
   });
 
   return (
-    <ScrollView
-      style={[styles.scrollView, { backgroundColor: theme.background }]}
-      contentInset={insets}
-      contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}
-    >
-      <Text> People </Text>
-    </ScrollView>
+    <FlatList
+      data={people}
+      keyExtractor={(item, index) => `${index}-${item.name}`}
+      renderItem={({ item }) => (
+        <Typography variant="h4">{item.name}</Typography>
+      )}
+      ListHeaderComponent={<Typography variant="h1">People</Typography>}
+      ListFooterComponent={
+        <Button
+          variant="primary"
+          fullWidth
+          title="Add people"
+          onPress={() => router.push("/screens/addPerson")}
+        />
+      }
+      contentContainerStyle={[
+        styles.contentContainer,
+        contentPlatformStyle,
+        { paddingTop: insets.top },
+      ]}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
   contentContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  container: {
-    maxWidth: MaxContentWidth,
     flexGrow: 1,
-  },
-  titleContainer: {
-    gap: Spacing.three,
-    alignItems: "center",
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.six,
-  },
-  centerText: {
-    textAlign: "center",
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  linkButton: {
-    flexDirection: "row",
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.five,
-    justifyContent: "center",
-    gap: Spacing.one,
-    alignItems: "center",
-  },
-  sectionsWrapper: {
-    gap: Spacing.five,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  collapsibleContent: {
-    alignItems: "center",
-  },
-  imageTutorial: {
-    width: "100%",
-    aspectRatio: 296 / 171,
-    borderRadius: Spacing.three,
-    marginTop: Spacing.two,
-  },
-  imageReact: {
-    width: 100,
-    height: 100,
-    alignSelf: "center",
+    backgroundColor: colors.background,
+    padding: spacing.s,
+    gap: spacing.s,
   },
 });
