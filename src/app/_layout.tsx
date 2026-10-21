@@ -12,6 +12,16 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="screens/addExpense" options={{ title: "Add Expense" }} />
+        <Stack.Screen
+          name="screens/addPerson"
+          options={{
+            presentation: "transparentModal",
+            animation: "fade",
+            contentStyle: { backgroundColor: "transparent" },
+            gestureEnabled: false,
+            title: "Add Person",
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );

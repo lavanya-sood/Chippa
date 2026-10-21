@@ -1,23 +1,22 @@
 import Button from "@/components/Button";
+import TextField from "@/components/TextField";
 import { colors } from "@/foundation/colors";
+import { spacing } from "@/foundation/spacing";
+import { Typography } from "@/foundation/Typography";
 import { usePeopleStore } from "@/state";
 import { generateShortId } from "@/utils/id";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function AddExpense() {
+export default function AddPerson() {
   const router = useRouter();
-
   const safeAreaInsets = useSafeAreaInsets();
-
   const { people, addPerson } = usePeopleStore();
-
   const [newPerson, setNewPerson] = useState("");
 
   const addNewPerson = () => {
-    console.log("running this");
     const personValue = newPerson.trim();
 
     if (personValue.length === 0) return;
@@ -36,43 +35,79 @@ export default function AddExpense() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
-      <Text> Add People </Text>
-      <View>
-        <Text> Name </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setNewPerson}
+    <View
+      style={[
+        styles.overlay,
+        {
+          paddingTop: safeAreaInsets.top + spacing.s,
+          paddingBottom: safeAreaInsets.bottom + spacing.s,
+        },
+      ]}
+    >
+      <View style={styles.card}>
+        <View style={styles.header}>
+          <Typography variant="h3">Add Person</Typography>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Close"
+            hitSlop={8}
+            onPress={() => router.back()}
+            style={styles.closeButton}
+          >
+            <Text style={styles.closeLabel}>×</Text>
+          </Pressable>
+        </View>
+
+        <TextField
+          label="Name"
           value={newPerson}
-          placeholder="name your expense"
+          onChangeValue={setNewPerson}
+          placeholder="Enter the name"
+        />
+
+        <Button
+          variant="primary"
+          fullWidth
+          title="Add person"
+          onPress={addNewPerson}
         />
       </View>
-
-      {/* <Pressable onPress={addNewPerson}>
-        <Text> Add person </Text>
-      </Pressable> */}
-      <Button
-        variant="primary"
-        fullWidth
-        title={"Add people"}
-        onPress={addNewPerson}
-      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  overlay: {
     flex: 1,
-    // justifyContent: "center",
-    // alignItems: "center",
-    // flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    paddingHorizontal: spacing.s,
+  },
+  card: {
+    width: "100%",
+    maxWidth: 400,
+    padding: spacing.l,
+    gap: spacing.l,
+    borderRadius: 20,
+    backgroundColor: colors.surface,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  closeButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: colors.background,
   },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
+  closeLabel: {
+    color: colors.textSecondary,
+    fontSize: 26,
+    lineHeight: 30,
   },
 });

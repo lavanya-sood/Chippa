@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 
   // UI text
   label: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: "500",
     lineHeight: 16,
     letterSpacing: 0.5,
