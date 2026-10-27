@@ -3,8 +3,8 @@ import TextField from "@/components/TextField";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { usePeopleStore } from "@/state";
-import { useExpensesStore } from "@/state/index";
+import { usePeopleStore, useExpensesStore } from "@/state";
+import { timeAgo, formatDate } from "@/utils/date";
 import { Expense } from "@/types/index";
 import { generateShortId } from "@/utils/id";
 import DateTimePicker, {
@@ -33,17 +33,12 @@ export default function AddExpense() {
   const [pickerDate, setPickerDate] = useState<Date>(date);
   const [mode, setMode] = useState<"date" | "time">("date");
   const [show, setShow] = useState<boolean>(false);
-
-  const [newPerson, setNewPerson] = useState("");
   const [peopleList, setPeopleList] = useState<string[]>([]);
-  const [isAddingPerson, setIsAddingPerson] = useState(false);
 
   const { expenses, addExpense } = useExpensesStore();
   const { people } = usePeopleStore();
-  // const addExpense = useExpensesStore((state) => state.addExpense);
 
   console.log("peopleList", peopleList);
-  console.log(isAddingPerson);
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     // On Android, dismissing the picker returns an 'dismissed' event
@@ -82,14 +77,6 @@ export default function AddExpense() {
   const savePickerDate = () => {
     setDate(pickerDate);
     setShow(false);
-  };
-
-  // Format date output into a localized readable string
-  const formatDateTime = (dateTime: Date) => {
-    return `${dateTime.toLocaleDateString()} ${dateTime.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    })}`;
   };
 
   const selectPerson = (id: string) => {
@@ -136,7 +123,7 @@ export default function AddExpense() {
           <View pointerEvents="none">
             <TextField
               label="Date"
-              value={formatDateTime(date)}
+              value={formatDate(date)}
               onChangeValue={() => {}}
               placeholder="Enter the expense name"
               editable={false}

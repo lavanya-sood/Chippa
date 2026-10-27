@@ -4,75 +4,84 @@ import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
 import { useExpensesStore } from "@/state/index";
 import { useRouter } from "expo-router";
-import { FlatList, Platform, StyleSheet } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { ScrollView, StyleSheet, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { timeAgo, formatDate } from "@/utils/date";
 
 export default function HomeScreen() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
   const { expenses } = useExpensesStore();
-
-  const insets = {
-    ...safeAreaInsets,
-    bottom: safeAreaInsets.bottom,
-  };
-
-  const contentPlatformStyle = Platform.select({
-    android: {
-      paddingTop: insets.top,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-      paddingBottom: insets.bottom,
-    },
-  });
+  const recentExpenses = expenses.slice(-3);
 
   console.log(expenses);
 
   return (
-    // <ScrollView contentContainerStyle={styles.container}>
-    //   <Typography variant="h1">Home</Typography>
+    <>
+      <StatusBar style="dark" />
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={[
+          styles.container,
+          { paddingTop: safeAreaInsets.top },
+        ]}
+      >
+        <Typography variant="h1">Home</Typography>
 
-    //   <View style={styles.buttonGroup}>
-    //     <Button
-    //       variant="primary"
-    //       fullWidth
-    //       title={"Create Expense"}
-    //       onPress={() => router.push("/screens/addExpense")}
-    //     />
-    //   </View>
-
-    // </ScrollView>
-    <FlatList
-      data={expenses}
-      keyExtractor={(item, index) => `${index}-${item.name}`}
-      renderItem={({ item }) => (
-        <Typography variant="h4">{item.name}</Typography>
-      )}
-      ListHeaderComponent={<Typography variant="h1">Expenses</Typography>}
-      ListFooterComponent={
         <Button
           variant="primary"
           fullWidth
-          title="Add expense"
+          title={"Create Expense"}
           onPress={() => router.push("/screens/addExpense")}
         />
-      }
-      contentContainerStyle={[
-        styles.contentContainer,
-        contentPlatformStyle,
-        { paddingTop: insets.top },
-      ]}
-    />
+
+        <Typography variant="h2">Recent expenses</Typography>
+        {recentExpenses.map((expense) => (
+          <Pressable key={expense.id}>
+            <Typography variant="h4">{expense.name}</Typography>
+            <Typography variant="bodySmall">{timeAgo(expense.date)}</Typography>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </>
+    // <FlatList
+    //   data={expenses}
+    //   keyExtractor={(item, index) => `${index}-${item.name}`}
+    //   renderItem={({ item }) => (
+    //     <Typography variant="h4">{item.name}</Typography>
+    //   )}
+    //   ListHeaderComponent={<Typography variant="h1">Expenses</Typography>}
+    //   ListFooterComponent={
+    //     <Button
+    //       variant="primary"
+    //       fullWidth
+    //       title="Add expense"
+    //       onPress={() => router.push("/screens/addExpense")}
+    //     />
+    //   }
+    //   contentContainerStyle={[
+    //     styles.contentContainer,
+    //     contentPlatformStyle,
+    //     { paddingTop: insets.top },
+    //   ]}
+    // />
   );
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   backgroundColor: colors.background,
-  // },
+  screen: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  container: {
+    flexGrow: 1,
+    // justifyContent: "center",
+    // alignItems: "center",
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.base,
+    gap: spacing.s,
+  },
   contentContainer: {
     // flexDirection: "row",
     // justifyContent: "center",
