@@ -15,8 +15,6 @@ export default function HomeScreen() {
   const { expenses } = useExpensesStore();
   const recentExpenses = expenses.slice(-3);
 
-  console.log(expenses);
-
   return (
     <>
       <StatusBar style="dark" />

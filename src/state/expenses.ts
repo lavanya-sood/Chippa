@@ -1,9 +1,13 @@
 import { create } from "zustand";
-import { Expense, Item } from "../types/index";
+import { createJSONStorage, persist } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { Expense, Item } from "../types/index";
+import { reportHydrationError } from "./persistence";
 
 interface ExpensesStore {
   expenses: Expense[];
   addExpense: (expense: Expense) => void;
+  clearExpenses: () => void;
   updateExpense: (expenseId: string, updates: Partial<Expense>) => void;
   addItemToExpense: (expenseId: string, item: Item) => void;
   updateItemInExpense: (expenseId: string, item: Item) => void;
@@ -15,75 +19,92 @@ interface ExpensesStore {
 const getExpenseTotal = (items: Item[]) =>
   items.reduce((total, item) => total + item.amount * item.quantity, 0);
 
-const useExpensesStore = create<ExpensesStore>((set, get) => ({
-  expenses: [],
+const useExpensesStore = create<ExpensesStore>()(
+  persist(
+    (set, get) => ({
+      expenses: [],
 
-  addExpense: (newExpense) =>
-    set((state) => ({
-      expenses: [...state.expenses, newExpense],
-    })),
+      addExpense: (newExpense) =>
+        set((state) => ({
+          expenses: [...state.expenses, newExpense],
+        })),
 
-  updateExpense: (expenseId, updates) =>
-    set((state) => ({
-      expenses: state.expenses.map((expense) =>
-        expense.id === expenseId ? { ...expense, ...updates } : expense,
-      ),
-    })),
+      clearExpenses: () => set({ expenses: [] }),
 
-  addItemToExpense: (expenseId, item) =>
-    set((state) => ({
-      expenses: state.expenses.map((expense) =>
-        expense.id === expenseId
-          ? {
-              ...expense,
-              items: [...expense.items, item],
-              total: getExpenseTotal([...expense.items, item]),
-            }
-          : expense,
-      ),
-    })),
+      updateExpense: (expenseId, updates) =>
+        set((state) => ({
+          expenses: state.expenses.map((expense) =>
+            expense.id === expenseId ? { ...expense, ...updates } : expense,
+          ),
+        })),
 
-  updateItemInExpense: (expenseId, item) =>
-    set((state) => ({
-      expenses: state.expenses.map((expense) =>
-        expense.id === expenseId
-          ? {
-              ...expense,
-              items: expense.items.map((currentItem) =>
-                currentItem.id === item.id ? item : currentItem,
-              ),
-              total: getExpenseTotal(
-                expense.items.map((currentItem) =>
-                  currentItem.id === item.id ? item : currentItem,
-                ),
-              ),
-            }
-          : expense,
-      ),
-    })),
+      addItemToExpense: (expenseId, item) =>
+        set((state) => ({
+          expenses: state.expenses.map((expense) =>
+            expense.id === expenseId
+              ? {
+                  ...expense,
+                  items: [...expense.items, item],
+                  total: getExpenseTotal([...expense.items, item]),
+                }
+              : expense,
+          ),
+        })),
 
-  removeItemFromExpense: (expenseId, itemId) =>
-    set((state) => ({
-      expenses: state.expenses.map((expense) =>
-        expense.id === expenseId
-          ? {
-              ...expense,
-              items: expense.items.filter((item) => item.id !== itemId),
-              total: getExpenseTotal(
-                expense.items.filter((item) => item.id !== itemId),
-              ),
-            }
-          : expense,
-      ),
-    })),
+      updateItemInExpense: (expenseId, item) =>
+        set((state) => ({
+          expenses: state.expenses.map((expense) =>
+            expense.id === expenseId
+              ? {
+                  ...expense,
+                  items: expense.items.map((currentItem) =>
+                    currentItem.id === item.id ? item : currentItem,
+                  ),
+                  total: getExpenseTotal(
+                    expense.items.map((currentItem) =>
+                      currentItem.id === item.id ? item : currentItem,
+                    ),
+                  ),
+                }
+              : expense,
+          ),
+        })),
 
-  removeExpense: (expenseId: string) =>
-    set((state) => ({
-      expenses: state.expenses.filter((expense) => expense.id !== expenseId),
-    })),
+      removeItemFromExpense: (expenseId, itemId) =>
+        set((state) => ({
+          expenses: state.expenses.map((expense) =>
+            expense.id === expenseId
+              ? {
+                  ...expense,
+                  items: expense.items.filter((item) => item.id !== itemId),
+                  total: getExpenseTotal(
+                    expense.items.filter((item) => item.id !== itemId),
+                  ),
+                }
+              : expense,
+          ),
+        })),
 
-  findExpense: (expenseId: string) =>
-    get().expenses.find((expense) => expense.id === expenseId),
-}));
+      removeExpense: (expenseId: string) =>
+        set((state) => ({
+          expenses: state.expenses.filter((expense) => expense.id !== expenseId),
+        })),
+
+      findExpense: (expenseId: string) =>
+        get().expenses.find((expense) => expense.id === expenseId),
+    }),
+    {
+      name: "chippa-expenses",
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({ expenses: state.expenses }),
+      skipHydration: true,
+      onRehydrateStorage: () => (_state, error) => {
+        if (error) {
+          reportHydrationError(error);
+        }
+      },
+    },
+  ),
+);
 
 export default useExpensesStore;

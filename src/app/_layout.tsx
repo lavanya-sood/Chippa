@@ -1,13 +1,20 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { useEffect, useState } from "react";
+import { Text, useColorScheme, View } from "react-native";
+import { useExpensesStore, usePeopleStore } from "@/state";
+import {
+  getHydrationError,
+  subscribeToHydrationError,
+} from "@/state/persistence";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [storesHydrated, setStoresHydrated] = useState(false);
+  const [hydrationError, setHydrationError] = useState<unknown>(null);
   const [fontsLoaded, fontError] = useFonts({
     "Fredoka-Regular": require("../../assets/fonts/Fredoka/static/Fredoka-Regular.ttf"),
     "Fredoka-Medium": require("../../assets/fonts/Fredoka/static/Fredoka-Medium.ttf"),
@@ -15,16 +22,67 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    if ((fontsLoaded && storesHydrated) || fontError || hydrationError) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded, fontError, storesHydrated, hydrationError]);
+
+  useEffect(() => {
+    let active = true;
+    const unsubscribe = subscribeToHydrationError((error) => {
+      if (active) {
+        setHydrationError(error);
+      }
+    });
+
+    const hydrateStores = async () => {
+      try {
+        await Promise.all([
+          usePeopleStore.persist.rehydrate(),
+          useExpensesStore.persist.rehydrate(),
+        ]);
+        const error = getHydrationError();
+
+        if (active) {
+          if (error) {
+            setHydrationError(error);
+          } else {
+            setStoresHydrated(true);
+          }
+        }
+      } catch (error) {
+        if (active) {
+          setHydrationError(error);
+        }
+      }
+    };
+
+    void hydrateStores();
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, []);
 
   if (fontError) {
     throw fontError;
   }
 
-  if (!fontsLoaded) {
+  if (hydrationError) {
+    const message =
+      hydrationError instanceof Error
+        ? hydrationError.message
+        : String(hydrationError);
+
+    return (
+      <View style={{ flex: 1, justifyContent: "center", padding: 24 }}>
+        <Text>Could not load saved app data: {message}</Text>
+      </View>
+    );
+  }
+
+  if (!fontsLoaded || !storesHydrated) {
     return null;
   }
 

@@ -1,87 +1,84 @@
-import { Platform, ScrollView, StyleSheet, Text } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { BottomTabInset, MaxContentWidth, Spacing } from "@/constants/theme";
-import { useTheme } from "@/hooks/use-theme";
+import Button from "@/components/Button";
+import { colors } from "@/foundation/colors";
+import { spacing } from "@/foundation/spacing";
+import { Typography } from "@/foundation/Typography";
+import { useExpensesStore, usePeopleStore } from "@/state";
 
-export default function TabThreeScreen() {
+export default function ProfileScreen() {
   const safeAreaInsets = useSafeAreaInsets();
-  const insets = {
-    ...safeAreaInsets,
-    bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
-  };
-  const theme = useTheme();
-
-  const contentPlatformStyle = Platform.select({
-    android: {
-      paddingTop: insets.top,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-      paddingBottom: insets.bottom,
-    },
-  });
+  const people = usePeopleStore((state) => state.people);
+  const clearPeople = usePeopleStore((state) => state.clearPeople);
+  const expenses = useExpensesStore((state) => state.expenses);
+  const clearExpenses = useExpensesStore((state) => state.clearExpenses);
 
   return (
     <ScrollView
-      style={[styles.scrollView, { backgroundColor: theme.background }]}
-      contentInset={insets}
-      contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}
+      style={styles.screen}
+      contentContainerStyle={[
+        styles.contentContainer,
+        {
+          paddingTop: safeAreaInsets.top + spacing.base,
+          paddingBottom: safeAreaInsets.bottom + spacing.base,
+        },
+      ]}
     >
-      <Text> Profile </Text>
+      <Typography variant="h1">Profile</Typography>
+      {__DEV__ && (
+        <View style={styles.debugMenu}>
+          <Typography variant="h3">Developer debug menu</Typography>
+          <Typography variant="body">
+            People stored: {people.length}
+          </Typography>
+          <Button
+            title="Clear people"
+            variant="outline"
+            fullWidth
+            onPress={clearPeople}
+          />
+          <Button
+            title="Log people"
+            variant="secondary"
+            fullWidth
+            onPress={() => console.log("People:", people)}
+          />
+          <Typography variant="body">
+            Expenses stored: {expenses.length}
+          </Typography>
+          <Button
+            title="Clear expenses"
+            variant="outline"
+            fullWidth
+            onPress={clearExpenses}
+          />
+          <Button
+            title="Log expenses"
+            variant="secondary"
+            fullWidth
+            onPress={() => console.log("Expenses:", expenses)}
+          />
+        </View>
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  screen: {
     flex: 1,
+    backgroundColor: colors.background,
   },
   contentContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  container: {
-    maxWidth: MaxContentWidth,
     flexGrow: 1,
+    paddingHorizontal: spacing.base,
+    gap: spacing.base,
   },
-  titleContainer: {
-    gap: Spacing.three,
-    alignItems: "center",
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.six,
-  },
-  centerText: {
-    textAlign: "center",
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  linkButton: {
-    flexDirection: "row",
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.five,
-    justifyContent: "center",
-    gap: Spacing.one,
-    alignItems: "center",
-  },
-  sectionsWrapper: {
-    gap: Spacing.five,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  collapsibleContent: {
-    alignItems: "center",
-  },
-  imageTutorial: {
-    width: "100%",
-    aspectRatio: 296 / 171,
-    borderRadius: Spacing.three,
-    marginTop: Spacing.two,
-  },
-  imageReact: {
-    width: 100,
-    height: 100,
-    alignSelf: "center",
+  debugMenu: {
+    gap: spacing.s,
+    padding: spacing.base,
+    borderRadius: spacing.base,
+    backgroundColor: colors.surface,
   },
 });

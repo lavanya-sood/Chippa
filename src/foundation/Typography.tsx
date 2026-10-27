@@ -57,36 +57,36 @@ const styles = StyleSheet.create({
   h1: {
     fontFamily: "Fredoka-SemiBold",
     fontSize: 40,
-    lineHeight: 36,
+    lineHeight: 48,
   },
   h2: {
     fontFamily: "Fredoka-SemiBold",
     fontSize: 32,
-    lineHeight: 32,
+    lineHeight: 40,
   },
   h3: {
     fontFamily: "Fredoka-Medium",
     fontSize: 24,
     fontWeight: "500",
-    lineHeight: 28,
+    lineHeight: 32,
   },
   h4: {
     fontFamily: "Fredoka-Medium",
     fontSize: 20,
     fontWeight: "500",
-    lineHeight: 24,
+    lineHeight: 28,
   },
 
   // Body text
   bodyLarge: {
     fontSize: 20,
     fontWeight: "400",
-    lineHeight: 24,
+    lineHeight: 28,
   },
   body: {
     fontSize: 16,
     fontWeight: "400",
-    lineHeight: 21,
+    lineHeight: 24,
   },
   bodySmall: {
     fontSize: 12,
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     fontFamily: "Fredoka-Medium",
     fontSize: 16,
     fontWeight: "500",
-    lineHeight: 16,
+    lineHeight: 20,
     letterSpacing: 0.5,
   },
   caption: {
@@ -111,6 +111,6 @@ const styles = StyleSheet.create({
     fontFamily: "Fredoka-SemiBold",
     fontSize: 20,
     fontWeight: "600",
-    lineHeight: 20,
+    lineHeight: 24,
   },
 });
