@@ -1,16 +1,16 @@
 import { colors } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
-import { TextInput, View } from "react-native";
+import { TextInput, TextInputProps, View } from "react-native";
 import { styles } from "./styles";
 
-type TextFieldProps = {
+interface TextFieldProps extends TextInputProps {
   label?: string;
   placeholder?: string;
   value: string;
   onChangeValue: (val: string) => void;
   disabled?: boolean;
   leftElement?: React.ReactNode;
-};
+}
 
 export default function TextField({
   label,
@@ -19,6 +19,7 @@ export default function TextField({
   onChangeValue,
   disabled = false,
   leftElement,
+  ...props
 }: TextFieldProps) {
   const isDisabled = disabled;
 
@@ -34,6 +35,7 @@ export default function TextField({
           placeholder={placeholder || ""}
           placeholderTextColor={colors.textDisabled}
           style={[styles.textInput, { width: leftElement ? "85%" : "100%" }]}
+          {...props}
         />
       </View>
     </View>

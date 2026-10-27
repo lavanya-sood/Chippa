@@ -43,7 +43,7 @@ export const styles = StyleSheet.create({
 
   label: {
     fontWeight: "600",
-    fontFamily: "Fredoka",
+    fontFamily: "Fredoka-SemiBold",
     fontSize: 28,
   },
   primaryLabel: {

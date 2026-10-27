@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
 
   textInput: {
     fontWeight: "normal",
-    fontFamily: "Fredoka",
+    fontFamily: "Fredoka-Regular",
     fontSize: 16,
   },
 });

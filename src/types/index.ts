@@ -16,7 +16,7 @@ export interface Expense {
   id: string;
   name: string;
   date: string;
-  people: Person[];
+  people: string[];
   paidBy?: string;
   items: Item[];
 }

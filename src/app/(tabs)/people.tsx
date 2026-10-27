@@ -3,7 +3,7 @@ import { FlatList, Platform, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Button from "@/components/Button";
-import { BottomTabInset, Spacing } from "@/constants/theme";
+
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
@@ -18,7 +18,7 @@ export default function TabTwoScreen() {
 
   const insets = {
     ...safeAreaInsets,
-    bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
+    bottom: safeAreaInsets.bottom,
   };
 
   const contentPlatformStyle = Platform.select({
