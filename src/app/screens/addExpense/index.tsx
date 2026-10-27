@@ -4,16 +4,17 @@ import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
 import { usePeopleStore, useExpensesStore } from "@/state";
-import { timeAgo, formatDate } from "@/utils/date";
+import { formatDate } from "@/utils/date";
 import { Expense } from "@/types/index";
 import { generateShortId } from "@/utils/id";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
+  Alert,
   Modal,
   Platform,
   Pressable,
@@ -22,23 +23,36 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 
 export default function AddExpense() {
   const router = useRouter();
-
-  const [expenseName, setExpenseName] = useState("");
   const safeAreaInsets = useSafeAreaInsets();
-
-  const [date, setDate] = useState<Date>(new Date());
-  const [pickerDate, setPickerDate] = useState<Date>(date);
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const {
+    expenses,
+    addExpense,
+    updateExpense,
+    removeExpense,
+  } = useExpensesStore();
+  const editingExpense = expenses.find((expense) => expense.id === id);
+  const [expenseName, setExpenseName] = useState(
+    () => editingExpense?.name ?? "",
+  );
+  const [date, setDate] = useState(
+    () => (editingExpense ? new Date(editingExpense.date) : new Date()),
+  );
+  const [pickerDate, setPickerDate] = useState(date);
   const [mode, setMode] = useState<"date" | "time">("date");
   const [show, setShow] = useState<boolean>(false);
-  const [peopleList, setPeopleList] = useState<string[]>([]);
-
-  const { expenses, addExpense } = useExpensesStore();
+  const [peopleList, setPeopleList] = useState<string[]>(
+    () => editingExpense?.people ?? [],
+  );
   const { people } = usePeopleStore();
 
-  console.log("peopleList", peopleList);
+  const goBack = () => {
+    router.back();
+  };
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     // On Android, dismissing the picker returns an 'dismissed' event
@@ -87,29 +101,60 @@ export default function AddExpense() {
     );
   };
 
-  const createExpense = () => {
-    console.log("CREAT EXPENSE WITH");
+  const saveExpense = () => {
+    const name = expenseName.trim();
+    if (!name) return;
 
-    const index = expenses.length;
+    if (editingExpense) {
+      updateExpense(editingExpense.id, {
+        name,
+        date: date.toString(),
+        people: peopleList,
+      });
+    } else {
+      const expenseItem: Expense = {
+        id: generateShortId(expenses.length),
+        name,
+        date: date.toString(),
+        total: 0,
+        people: peopleList,
+        paidBy: "000",
+        items: [],
+      };
+      addExpense(expenseItem);
+    }
 
-    const expenseItem: Expense = {
-      id: generateShortId(index),
-      name: expenseName,
-      date: date.toString(),
-      people: peopleList,
-      paidBy: "123",
-      items: [],
-    };
-
-    console.log(expenseItem);
-
-    addExpense(expenseItem);
     router.back();
+  };
+
+  const confirmDeleteExpense = () => {
+    if (!editingExpense) return;
+
+    Alert.alert(
+      "Delete expense?",
+      "This will permanently delete this expense and its items.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            removeExpense(editingExpense.id);
+            router.replace("/(tabs)");
+          },
+        },
+      ],
+    );
   };
 
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
-      <Typography variant="h2">Create new expense</Typography>
+      <Pressable onPress={goBack}>
+        <MaterialDesignIcons name="chevron-left" size={24} color="black" />
+      </Pressable>
+      <Typography variant="h2">
+        {editingExpense ? "Edit expense" : "Create new expense"}
+      </Typography>
 
       <TextField
         label="Expense name"
@@ -216,9 +261,21 @@ export default function AddExpense() {
       <Button
         variant="primary"
         fullWidth
-        title="Create expense"
-        onPress={createExpense}
+        title={editingExpense ? "Save changes" : "Create expense"}
+        onPress={saveExpense}
+        disabled={!expenseName.trim()}
       />
+      {editingExpense && (
+        <Pressable
+          accessibilityRole="button"
+          onPress={confirmDeleteExpense}
+          style={styles.deleteButton}
+        >
+          <Typography variant="label" color={colors.error}>
+            Delete expense
+          </Typography>
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -239,6 +296,14 @@ const styles = StyleSheet.create({
   },
   selectedPerson: {
     color: colors.error,
+  },
+  deleteButton: {
+    minHeight: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.error,
+    borderRadius: spacing.s,
   },
   pickerOverlay: {
     flex: 1,

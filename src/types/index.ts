@@ -8,6 +8,7 @@ export interface Item {
   id: string;
   name: string;
   amount: number;
+  quantity: number;
   sharedBy: string[];
   paidBy: string;
 }
@@ -16,6 +17,7 @@ export interface Expense {
   id: string;
   name: string;
   date: string;
+  total: number;
   people: string[];
   paidBy?: string;
   items: Item[];

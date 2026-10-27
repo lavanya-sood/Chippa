@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { timeAgo, formatDate } from "@/utils/date";
+import { timeAgo } from "@/utils/date";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -38,8 +38,20 @@ export default function HomeScreen() {
 
         <Typography variant="h2">Recent expenses</Typography>
         {recentExpenses.map((expense) => (
-          <Pressable key={expense.id}>
+          <Pressable
+            key={expense.id}
+            accessibilityRole="button"
+            onPress={() =>
+              router.push({
+                pathname: "/screens/expense/[id]",
+                params: { id: expense.id },
+              })
+            }
+          >
             <Typography variant="h4">{expense.name}</Typography>
+            <Typography variant="body">
+              Total: ${expense.total.toFixed(2)}
+            </Typography>
             <Typography variant="bodySmall">{timeAgo(expense.date)}</Typography>
           </Pressable>
         ))}
