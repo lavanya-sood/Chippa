@@ -49,27 +49,29 @@ export function Typography({
 
 const styles = StyleSheet.create({
   base: {
-    fontFamily: "Fredoka",
+    fontFamily: "Fredoka-Regular",
     color: colors.textBase,
   },
 
   // Headings
   h1: {
+    fontFamily: "Fredoka-SemiBold",
     fontSize: 40,
-    fontWeight: "600",
     lineHeight: 36,
   },
   h2: {
+    fontFamily: "Fredoka-SemiBold",
     fontSize: 32,
-    fontWeight: "600",
     lineHeight: 32,
   },
   h3: {
+    fontFamily: "Fredoka-Medium",
     fontSize: 24,
     fontWeight: "500",
     lineHeight: 28,
   },
   h4: {
+    fontFamily: "Fredoka-Medium",
     fontSize: 20,
     fontWeight: "500",
     lineHeight: 24,
@@ -94,7 +96,8 @@ const styles = StyleSheet.create({
 
   // UI text
   label: {
-    fontSize: 12,
+    fontFamily: "Fredoka-Medium",
+    fontSize: 16,
     fontWeight: "500",
     lineHeight: 16,
     letterSpacing: 0.5,
@@ -105,6 +108,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   button: {
+    fontFamily: "Fredoka-SemiBold",
     fontSize: 20,
     fontWeight: "600",
     lineHeight: 20,

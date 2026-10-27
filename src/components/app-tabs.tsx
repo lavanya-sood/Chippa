@@ -8,7 +8,13 @@ export default function AppTabs() {
       backgroundColor={colors.background}
       indicatorColor={colors.primary}
       tintColor={colors.primary}
-      labelStyle={{ selected: { color: colors.textPrimary } }}
+      labelStyle={{
+        default: { fontFamily: "Fredoka-Regular" },
+        selected: {
+          color: colors.textPrimary,
+          fontFamily: "Fredoka-Medium",
+        },
+      }}
     >
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
