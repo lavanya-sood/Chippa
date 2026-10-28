@@ -217,6 +217,7 @@ export default function AddExpense() {
                   >
                     <Person
                       name={item.name}
+                      avatarColor={item.avatarColor}
                       selected={peopleList.includes(item.id)}
                     />
                   </Pressable>

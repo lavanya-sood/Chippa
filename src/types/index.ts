@@ -1,7 +1,10 @@
+import type { PersonAvatarColor } from "@/foundation/colors";
+
 export interface Person {
   name: string;
   id: string;
   expenses: string[];
+  avatarColor?: PersonAvatarColor;
   logo?: string | null;
 }
 

@@ -1,5 +1,4 @@
 import { colors } from "@/foundation/colors";
-import { spacing } from "@/foundation/spacing";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({

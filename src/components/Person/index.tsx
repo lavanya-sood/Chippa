@@ -1,16 +1,20 @@
 import { colors } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
-import { TextInput, Pressable, TextInputProps, View } from "react-native";
+import type { PersonAvatarColor } from "@/foundation/colors";
+import { View } from "react-native";
 import { styles } from "./styles";
-import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 
 interface PersonProps {
   name: string;
-  icon?: string;
+  avatarColor?: PersonAvatarColor;
   selected: boolean;
 }
 
-export default function Person({ name, icon, selected }: PersonProps) {
+export default function Person({
+  name,
+  avatarColor = colors.avatarPink,
+  selected,
+}: PersonProps) {
   return (
     <View style={styles.person}>
       <View
@@ -19,7 +23,7 @@ export default function Person({ name, icon, selected }: PersonProps) {
           { borderColor: selected ? colors.primary : colors.background },
         ]}
       >
-        <View style={styles.personIcon} />
+        <View style={[styles.personIcon, { backgroundColor: avatarColor }]} />
       </View>
       <Typography
         variant={selected ? "h5" : "body"}

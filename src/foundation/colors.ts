@@ -63,3 +63,15 @@ export const colors = {
   avatarLavender: "#D9D2E6",
   avatarBlue: "#BFD8E5",
 };
+
+export const personAvatarColors = [
+  { name: "Pink", color: colors.avatarPink },
+  { name: "Peach", color: colors.avatarPeach },
+  { name: "Yellow", color: colors.avatarYellow },
+  { name: "Sage", color: colors.avatarSage },
+  { name: "Lavender", color: colors.avatarLavender },
+  { name: "Blue", color: colors.avatarBlue },
+] as const;
+
+export type PersonAvatarColor =
+  (typeof personAvatarColors)[number]["color"];
