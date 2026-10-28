@@ -2,6 +2,7 @@ import { colors } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
 import { TextInput, Pressable, TextInputProps, View } from "react-native";
 import { styles } from "./styles";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 
 interface ExpenseTileProps {
   id: string;
@@ -36,10 +37,17 @@ export default function ExpenseTile({
         <Typography variant="bodySmall" style={styles.subtitle}>
           {date} • {people.length} people
         </Typography>
-        <View style={styles.peopleIconList}>
-          {people.map((p) => (
-            <View key={p} style={styles.personIcon} />
-          ))}
+        <View style={styles.footer}>
+          <View style={styles.peopleIconList}>
+            {people.map((p) => (
+              <View key={p} style={styles.personIcon} />
+            ))}
+          </View>
+          <MaterialDesignIcons
+            name="chevron-right"
+            size={24}
+            color={colors.textPrimary}
+          />
         </View>
       </View>
     </Pressable>

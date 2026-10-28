@@ -2,7 +2,7 @@ import { colors } from "@/foundation/colors";
 import { ActivityIndicator, Pressable, Text } from "react-native";
 import { styles } from "./styles";
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "text";
+type ButtonVariant = "primary" | "secondary" | "outline" | "text" | "delete";
 type ButtonSize = "small" | "medium" | "large";
 
 type ButtonProps = {

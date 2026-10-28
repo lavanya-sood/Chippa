@@ -13,18 +13,20 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
+import { styles } from "./styles";
 import {
   Alert,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
+import AppHeader from "@/components/AppHeader";
+import DatePicker from "@/components/DatePicker";
+import Person from "@/components/Person";
 
 export default function AddExpense() {
   const router = useRouter();
@@ -48,10 +50,15 @@ export default function AddExpense() {
   const [paidBy, setPaidBy] = useState<string | undefined>(
     () => editingExpense?.paidBy,
   );
+  const [isPayerMenuOpen, setIsPayerMenuOpen] = useState(false);
   const { people } = usePeopleStore();
   const availablePayers = people.filter((person) =>
     peopleList.includes(person.id),
   );
+  const selectedPayer =
+    paidBy === SELF_PERSON_ID
+      ? { name: "You" }
+      : availablePayers.find((person) => person.id === paidBy);
 
   const goBack = () => {
     router.back();
@@ -106,8 +113,9 @@ export default function AddExpense() {
     }
   };
 
-  const selectPayer = (id: string) => {
+  const selectPayer = (id?: string) => {
     setPaidBy(id);
+    setIsPayerMenuOpen(false);
   };
 
   const saveExpense = () => {
@@ -158,286 +166,186 @@ export default function AddExpense() {
   };
 
   return (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      style={styles.screen}
-      contentContainerStyle={[
-        styles.container,
-        { paddingTop: safeAreaInsets.top },
-      ]}
-    >
-      <Pressable onPress={goBack}>
-        <MaterialDesignIcons name="chevron-left" size={24} color="black" />
-      </Pressable>
-      <Typography variant="h2">
-        {editingExpense ? "Edit expense" : "Create new expense"}
-      </Typography>
+    <View style={[styles.screen, { paddingTop: safeAreaInsets.top }]}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        style={styles.scrollView}
+        contentContainerStyle={styles.container}
+      >
+        <AppHeader
+          title={editingExpense ? "Edit expense" : "New expense"}
+          onBackPress={goBack}
+        />
 
-      <TextField
-        label="Expense name"
-        value={expenseName}
-        onChangeValue={setExpenseName}
-        placeholder="Enter the expense name"
-      />
+        <View style={styles.form}>
+          <TextField
+            label="Expense name"
+            value={expenseName}
+            onChangeValue={setExpenseName}
+            placeholder="Enter the expense name"
+          />
 
-      <View>
-        <Pressable onPress={() => showPicker("date")}>
-          <View pointerEvents="none">
-            <TextField
-              label="Date"
-              value={formatDate(date)}
-              onChangeValue={() => {}}
-              placeholder="Enter the expense name"
-              editable={false}
-            />
-          </View>
-        </Pressable>
-        {show && Platform.OS === "android" && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode={mode}
-            is24Hour={true}
+          <DatePicker
+            onPickerPress={() => showPicker("date")}
+            dateValue={date}
+            show={show}
             onChange={onChange}
-            display="default"
+            mode={mode}
+            onRequestClose={() => setShow(false)}
+            pickerDate={pickerDate}
+            savePickerDate={savePickerDate}
+            onPickerClose={() => setShow(false)}
+          />
+
+          <View>
+            <Typography variant="label">People</Typography>
+            <View>
+              <ScrollView
+                horizontal
+                style={styles.peopleList}
+                contentContainerStyle={styles.peopleListContent}
+              >
+                <Person name={"You"} selected={true} />
+                {people.map((item) => (
+                  <Pressable
+                    key={item.id}
+                    onPress={() => selectPerson(item.id)}
+                    accessibilityRole="button"
+                    accessibilityState={{
+                      selected: peopleList.includes(item.id),
+                    }}
+                  >
+                    <Person
+                      name={item.name}
+                      selected={peopleList.includes(item.id)}
+                    />
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+
+          <View style={styles.payerSection}>
+            <Typography variant="label">Who paid? (optional)</Typography>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={
+                selectedPayer
+                  ? `Payer: ${selectedPayer.name}`
+                  : "Select a payer"
+              }
+              accessibilityState={{ expanded: isPayerMenuOpen }}
+              onPress={() => setIsPayerMenuOpen((isOpen) => !isOpen)}
+              style={styles.payerDropdown}
+            >
+              <View style={styles.payerAvatar}>
+                <MaterialDesignIcons
+                  name="account"
+                  size={24}
+                  color={colors.textPrimary}
+                />
+              </View>
+              <View style={styles.payerDropdownText}>
+                <Typography variant="body">
+                  {selectedPayer?.name ?? "Select a payer"}
+                </Typography>
+                <Typography variant="bodySmall" color={colors.textSecondary}>
+                  {selectedPayer
+                    ? "Paid for this expense"
+                    : "No payer selected"}
+                </Typography>
+              </View>
+              <MaterialDesignIcons
+                name={isPayerMenuOpen ? "chevron-up" : "chevron-down"}
+                size={24}
+                color={colors.textSecondary}
+              />
+            </Pressable>
+            {isPayerMenuOpen && (
+              <View style={styles.payerOptions}>
+                <Pressable
+                  accessibilityRole="radio"
+                  accessibilityLabel="No payer selected"
+                  accessibilityState={{ selected: paidBy === undefined }}
+                  onPress={() => selectPayer(undefined)}
+                  style={styles.payerOption}
+                >
+                  <View style={styles.payerAvatar}>
+                    <MaterialDesignIcons
+                      name="account-off-outline"
+                      size={24}
+                      color={colors.textSecondary}
+                    />
+                  </View>
+                  <Typography variant="body">No payer</Typography>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: paidBy === SELF_PERSON_ID }}
+                  onPress={() => selectPayer(SELF_PERSON_ID)}
+                  style={[
+                    styles.payerOption,
+                    paidBy === SELF_PERSON_ID && styles.payerOptionSelected,
+                  ]}
+                >
+                  <View style={styles.payerAvatar}>
+                    <MaterialDesignIcons
+                      name="account"
+                      size={24}
+                      color={colors.textPrimary}
+                    />
+                  </View>
+                  <Typography variant="body">You</Typography>
+                </Pressable>
+                {availablePayers.map((person) => (
+                  <Pressable
+                    key={person.id}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: paidBy === person.id }}
+                    onPress={() => selectPayer(person.id)}
+                    style={[
+                      styles.payerOption,
+                      paidBy === person.id && styles.payerOptionSelected,
+                    ]}
+                  >
+                    <View style={styles.payerAvatar}>
+                      <MaterialDesignIcons
+                        name="account"
+                        size={24}
+                        color={colors.textPrimary}
+                      />
+                    </View>
+                    <Typography variant="body">{person.name}</Typography>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+          </View>
+        </View>
+      </ScrollView>
+
+      <View
+        style={[
+          styles.footer,
+          { paddingBottom: safeAreaInsets.bottom + spacing.base },
+        ]}
+      >
+        <Button
+          variant="primary"
+          fullWidth
+          title={editingExpense ? "Save changes" : "Create expense"}
+          onPress={saveExpense}
+          disabled={!expenseName.trim()}
+        />
+        {editingExpense && (
+          <Button
+            variant="delete"
+            fullWidth
+            title={"Delete expense"}
+            onPress={confirmDeleteExpense}
           />
         )}
       </View>
-      {Platform.OS === "ios" && (
-        <Modal
-          visible={show}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setShow(false)}
-        >
-          <View
-            style={[
-              styles.pickerOverlay,
-              {
-                paddingTop: safeAreaInsets.top + spacing.s,
-                paddingBottom: safeAreaInsets.bottom + spacing.s,
-              },
-            ]}
-          >
-            <View style={styles.pickerCard}>
-              <View style={styles.pickerHeader}>
-                <Typography variant="h3">Select date and time</Typography>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Close date and time picker"
-                  hitSlop={8}
-                  onPress={() => setShow(false)}
-                  style={styles.closeButton}
-                >
-                  <Text style={styles.closeLabel}>×</Text>
-                </Pressable>
-              </View>
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={pickerDate}
-                mode="datetime"
-                is24Hour={true}
-                onChange={onChange}
-                display="spinner"
-              />
-              <Button
-                variant="primary"
-                fullWidth
-                title="Done"
-                onPress={savePickerDate}
-              />
-            </View>
-          </View>
-        </Modal>
-      )}
-      <View>
-        <Typography variant="h3">People</Typography>
-        <Text style={styles.selectedPerson}>You (included)</Text>
-        {people.map((item) => (
-          <Pressable
-            key={item.id}
-            onPress={() => selectPerson(item.id)}
-            accessibilityRole="button"
-            accessibilityState={{ selected: peopleList.includes(item.id) }}
-          >
-            <Text
-              style={
-                peopleList.includes(item.id) ? styles.selectedPerson : undefined
-              }
-            >
-              {item.name}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <View style={styles.payerSection}>
-        <Typography variant="h3">Who paid? (optional)</Typography>
-        <Pressable
-          accessibilityRole="radio"
-          accessibilityState={{ selected: !paidBy }}
-          onPress={() => setPaidBy(undefined)}
-          style={[styles.payerOption, !paidBy && styles.payerOptionSelected]}
-        >
-          <Typography variant="body" color={colors.textPrimary}>
-            No individual payer
-          </Typography>
-          {!paidBy && (
-            <MaterialDesignIcons
-              name="check"
-              size={20}
-              color={colors.primary}
-            />
-          )}
-        </Pressable>
-        <Pressable
-          accessibilityRole="radio"
-          accessibilityState={{ selected: paidBy === SELF_PERSON_ID }}
-          onPress={() => selectPayer(SELF_PERSON_ID)}
-          style={[
-            styles.payerOption,
-            paidBy === SELF_PERSON_ID && styles.payerOptionSelected,
-          ]}
-        >
-          <Typography variant="body" color={colors.textPrimary}>
-            You
-          </Typography>
-          {paidBy === SELF_PERSON_ID && (
-            <MaterialDesignIcons
-              name="check"
-              size={20}
-              color={colors.primary}
-            />
-          )}
-        </Pressable>
-        {availablePayers.map((person) => {
-          const isSelected = paidBy === person.id;
-          return (
-            <Pressable
-              key={person.id}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: isSelected }}
-              onPress={() => selectPayer(person.id)}
-              style={[
-                styles.payerOption,
-                isSelected && styles.payerOptionSelected,
-              ]}
-            >
-              <Typography variant="body" color={colors.textPrimary}>
-                {person.name}
-              </Typography>
-              {isSelected && (
-                <MaterialDesignIcons
-                  name="check"
-                  size={20}
-                  color={colors.primary}
-                />
-              )}
-            </Pressable>
-          );
-        })}
-      </View>
-
-      <Button
-        variant="primary"
-        fullWidth
-        title={editingExpense ? "Save changes" : "Create expense"}
-        onPress={saveExpense}
-        disabled={!expenseName.trim()}
-      />
-      {editingExpense && (
-        <Pressable
-          accessibilityRole="button"
-          onPress={confirmDeleteExpense}
-          style={styles.deleteButton}
-        >
-          <Typography variant="label" color={colors.error}>
-            Delete expense
-          </Typography>
-        </Pressable>
-      )}
-    </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  container: {
-    flexGrow: 1,
-    backgroundColor: colors.background,
-
-    paddingHorizontal: spacing.base,
-    gap: spacing.s,
-  },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-  selectedPerson: {
-    color: colors.error,
-  },
-  payerSection: {
-    gap: spacing.xxs,
-  },
-  payerOption: {
-    minHeight: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.s,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: spacing.xxs,
-    backgroundColor: colors.surface,
-  },
-  payerOptionSelected: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryPale,
-  },
-  deleteButton: {
-    minHeight: 48,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: colors.error,
-    borderRadius: spacing.s,
-  },
-  pickerOverlay: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-    paddingHorizontal: spacing.s,
-  },
-  pickerCard: {
-    width: "100%",
-    maxWidth: 400,
-    padding: spacing.l,
-    gap: spacing.l,
-    borderRadius: 20,
-    backgroundColor: colors.surface,
-  },
-  pickerHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  closeButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.background,
-  },
-  closeLabel: {
-    color: colors.textSecondary,
-    fontSize: 26,
-    lineHeight: 30,
-  },
-});

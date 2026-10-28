@@ -21,6 +21,9 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.primary,
   },
+  delete: {
+    backgroundColor: colors.errorLight,
+  },
   text: {
     backgroundColor: "transparent",
   },
@@ -54,6 +57,9 @@ export const styles = StyleSheet.create({
   },
   outlineLabel: {
     color: colors.textPrimary,
+  },
+  deleteLabel: {
+    color: colors.error,
   },
   textLabel: {
     color: colors.textPrimary,

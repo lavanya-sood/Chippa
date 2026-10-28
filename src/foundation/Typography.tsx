@@ -118,9 +118,9 @@ const styles = StyleSheet.create({
   // UI text
   label: {
     fontFamily: "Fredoka-Medium",
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "500",
-    lineHeight: 20,
+    lineHeight: 28,
     letterSpacing: 0.5,
   },
   caption: {

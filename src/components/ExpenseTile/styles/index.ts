@@ -41,4 +41,9 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.avatarPink,
     borderRadius: 30,
   },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+  },
 });
