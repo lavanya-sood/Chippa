@@ -94,10 +94,6 @@ export default function RootLayout() {
         <Stack.Screen
           name="screens/addPerson"
           options={{
-            presentation: "transparentModal",
-            animation: "fade",
-            contentStyle: { backgroundColor: "transparent" },
-            gestureEnabled: false,
             title: "Add Person",
           }}
         />
