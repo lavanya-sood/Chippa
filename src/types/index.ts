@@ -10,7 +10,7 @@ export interface Item {
   amount: number;
   quantity: number;
   sharedBy: string[];
-  paidBy: string;
+  paidBy?: string | null;
 }
 
 export interface Expense {

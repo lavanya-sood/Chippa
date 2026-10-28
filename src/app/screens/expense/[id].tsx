@@ -56,14 +56,18 @@ export default function ExpenseDetails() {
 
   for (const item of expense.items) {
     const itemTotalCents = Math.round(item.amount * item.quantity * 100);
-    const payerId = item.paidBy || expense.paidBy || "000";
+    const payerId =
+      item.paidBy === undefined ? expense.paidBy : item.paidBy;
 
-    const payerBalance = balanceByPerson.get(payerId) ?? {
-      paidCents: 0,
-      owesCents: 0,
-    };
-    payerBalance.paidCents += itemTotalCents;
-    balanceByPerson.set(payerId, payerBalance);
+    if (payerId) {
+      personIds.add(payerId);
+      const payerBalance = balanceByPerson.get(payerId) ?? {
+        paidCents: 0,
+        owesCents: 0,
+      };
+      payerBalance.paidCents += itemTotalCents;
+      balanceByPerson.set(payerId, payerBalance);
+    }
 
     const sharedBy = [...new Set(item.sharedBy)];
     sharedBy.forEach((personId) => personIds.add(personId));

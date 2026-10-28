@@ -13,11 +13,11 @@ import DateTimePicker, {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  FlatList,
   Alert,
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -25,22 +25,20 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 
+const SELF_ID = "000";
+
 export default function AddExpense() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const {
-    expenses,
-    addExpense,
-    updateExpense,
-    removeExpense,
-  } = useExpensesStore();
+  const { expenses, addExpense, updateExpense, removeExpense } =
+    useExpensesStore();
   const editingExpense = expenses.find((expense) => expense.id === id);
   const [expenseName, setExpenseName] = useState(
     () => editingExpense?.name ?? "",
   );
-  const [date, setDate] = useState(
-    () => (editingExpense ? new Date(editingExpense.date) : new Date()),
+  const [date, setDate] = useState(() =>
+    editingExpense ? new Date(editingExpense.date) : new Date(),
   );
   const [pickerDate, setPickerDate] = useState(date);
   const [mode, setMode] = useState<"date" | "time">("date");
@@ -48,7 +46,13 @@ export default function AddExpense() {
   const [peopleList, setPeopleList] = useState<string[]>(
     () => editingExpense?.people ?? [],
   );
+  const [paidBy, setPaidBy] = useState<string | undefined>(
+    () => editingExpense?.paidBy,
+  );
   const { people } = usePeopleStore();
+  const availablePayers = people.filter((person) =>
+    peopleList.includes(person.id),
+  );
 
   const goBack = () => {
     router.back();
@@ -94,11 +98,17 @@ export default function AddExpense() {
   };
 
   const selectPerson = (id: string) => {
+    const isSelected = peopleList.includes(id);
     setPeopleList((prev) =>
-      prev.includes(id)
-        ? prev.filter((personId) => personId !== id)
-        : [...prev, id],
+      isSelected ? prev.filter((personId) => personId !== id) : [...prev, id],
     );
+    if (isSelected && paidBy === id) {
+      setPaidBy(undefined);
+    }
+  };
+
+  const selectPayer = (id: string) => {
+    setPaidBy(id);
   };
 
   const saveExpense = () => {
@@ -110,6 +120,7 @@ export default function AddExpense() {
         name,
         date: date.toString(),
         people: peopleList,
+        paidBy,
       });
     } else {
       const expenseItem: Expense = {
@@ -118,7 +129,7 @@ export default function AddExpense() {
         date: date.toString(),
         total: 0,
         people: peopleList,
-        paidBy: "000",
+        ...(paidBy ? { paidBy } : {}),
         items: [],
       };
       addExpense(expenseItem);
@@ -148,7 +159,14 @@ export default function AddExpense() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
+    <ScrollView
+      keyboardShouldPersistTaps="handled"
+      style={styles.screen}
+      contentContainerStyle={[
+        styles.container,
+        { paddingTop: safeAreaInsets.top },
+      ]}
+    >
       <Pressable onPress={goBack}>
         <MaterialDesignIcons name="chevron-left" size={24} color="black" />
       </Pressable>
@@ -234,28 +252,90 @@ export default function AddExpense() {
         </Modal>
       )}
       <View>
-        <Text> People</Text>
-        <FlatList
-          data={people}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => selectPerson(item.id)}
-              accessibilityRole="button"
-              accessibilityState={{ selected: peopleList.includes(item.id) }}
+        <Typography variant="h3">People</Typography>
+        {people.map((item) => (
+          <Pressable
+            key={item.id}
+            onPress={() => selectPerson(item.id)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: peopleList.includes(item.id) }}
+          >
+            <Text
+              style={
+                peopleList.includes(item.id) ? styles.selectedPerson : undefined
+              }
             >
-              <Text
-                style={
-                  peopleList.includes(item.id)
-                    ? styles.selectedPerson
-                    : undefined
-                }
-              >
-                {item.name}
-              </Text>
-            </Pressable>
+              {item.name}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
+      <View style={styles.payerSection}>
+        <Typography variant="h3">Who paid? (optional)</Typography>
+        <Pressable
+          accessibilityRole="radio"
+          accessibilityState={{ selected: !paidBy }}
+          onPress={() => setPaidBy(undefined)}
+          style={[styles.payerOption, !paidBy && styles.payerOptionSelected]}
+        >
+          <Typography variant="body" color={colors.textPrimary}>
+            No individual payer
+          </Typography>
+          {!paidBy && (
+            <MaterialDesignIcons
+              name="check"
+              size={20}
+              color={colors.primary}
+            />
           )}
-        />
+        </Pressable>
+        <Pressable
+          accessibilityRole="radio"
+          accessibilityState={{ selected: paidBy === SELF_ID }}
+          onPress={() => selectPayer(SELF_ID)}
+          style={[
+            styles.payerOption,
+            paidBy === SELF_ID && styles.payerOptionSelected,
+          ]}
+        >
+          <Typography variant="body" color={colors.textPrimary}>
+            You
+          </Typography>
+          {paidBy === SELF_ID && (
+            <MaterialDesignIcons
+              name="check"
+              size={20}
+              color={colors.primary}
+            />
+          )}
+        </Pressable>
+        {availablePayers.map((person) => {
+          const isSelected = paidBy === person.id;
+          return (
+            <Pressable
+              key={person.id}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: isSelected }}
+              onPress={() => selectPayer(person.id)}
+              style={[
+                styles.payerOption,
+                isSelected && styles.payerOptionSelected,
+              ]}
+            >
+              <Typography variant="body" color={colors.textPrimary}>
+                {person.name}
+              </Typography>
+              {isSelected && (
+                <MaterialDesignIcons
+                  name="check"
+                  size={20}
+                  color={colors.primary}
+                />
+              )}
+            </Pressable>
+          );
+        })}
       </View>
 
       <Button
@@ -276,13 +356,17 @@ export default function AddExpense() {
           </Typography>
         </Pressable>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
+    backgroundColor: colors.background,
+  },
+  container: {
+    flexGrow: 1,
     backgroundColor: colors.background,
 
     paddingHorizontal: spacing.base,
@@ -296,6 +380,24 @@ const styles = StyleSheet.create({
   },
   selectedPerson: {
     color: colors.error,
+  },
+  payerSection: {
+    gap: spacing.xxs,
+  },
+  payerOption: {
+    minHeight: 48,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.s,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: spacing.xxs,
+    backgroundColor: colors.surface,
+  },
+  payerOptionSelected: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryPale,
   },
   deleteButton: {
     minHeight: 48,

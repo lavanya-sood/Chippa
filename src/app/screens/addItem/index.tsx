@@ -48,6 +48,12 @@ export default function AddExpenseItem() {
   const [sharedBy, setSharedBy] = useState<string[]>(
     () => editingItem?.sharedBy ?? [],
   );
+  const [paidBy, setPaidBy] = useState<string | null | undefined>(
+    () =>
+      editingItem && "paidBy" in editingItem
+        ? editingItem.paidBy
+        : expense?.paidBy,
+  );
 
   const expensePeople =
     expense?.people
@@ -81,11 +87,7 @@ export default function AddExpenseItem() {
       amount,
       quantity: itemQuantity,
       sharedBy,
-      paidBy: editingItem?.paidBy ?? (
-        expense.paidBy === "123" || !expense.paidBy
-          ? SELF_ID
-          : expense.paidBy
-      ),
+      ...(paidBy !== undefined ? { paidBy } : {}),
     };
 
     if (editingItem) {
@@ -230,6 +232,76 @@ export default function AddExpenseItem() {
               })}
             </View>
 
+            <View style={styles.peopleSection}>
+              <Typography variant="h3">Who paid? (optional)</Typography>
+              <Pressable
+                accessibilityRole="radio"
+                accessibilityState={{ selected: paidBy == null }}
+                onPress={() => setPaidBy(null)}
+                style={[
+                  styles.personOption,
+                  paidBy == null && styles.payerOptionSelected,
+                ]}
+              >
+                <Typography variant="body" color={colors.textPrimary}>
+                  No payer
+                </Typography>
+                {paidBy == null && (
+                  <MaterialDesignIcons
+                    name="check"
+                    size={20}
+                    color={colors.primary}
+                  />
+                )}
+              </Pressable>
+              <Pressable
+                accessibilityRole="radio"
+                accessibilityState={{ selected: paidBy === SELF_ID }}
+                onPress={() => setPaidBy(SELF_ID)}
+                style={[
+                  styles.personOption,
+                  paidBy === SELF_ID && styles.payerOptionSelected,
+                ]}
+              >
+                <Typography variant="body" color={colors.textPrimary}>
+                  You
+                </Typography>
+                {paidBy === SELF_ID && (
+                  <MaterialDesignIcons
+                    name="check"
+                    size={20}
+                    color={colors.primary}
+                  />
+                )}
+              </Pressable>
+              {expensePeople.map((person) => {
+                const isSelected = paidBy === person.id;
+                return (
+                  <Pressable
+                    key={person.id}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: isSelected }}
+                    onPress={() => setPaidBy(person.id)}
+                    style={[
+                      styles.personOption,
+                      isSelected && styles.payerOptionSelected,
+                    ]}
+                  >
+                    <Typography variant="body" color={colors.textPrimary}>
+                      {person.name}
+                    </Typography>
+                    {isSelected && (
+                      <MaterialDesignIcons
+                        name="check"
+                        size={20}
+                        color={colors.primary}
+                      />
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
+
             <Typography variant="bodySmall">
               Total: ${(amount * itemQuantity || 0).toFixed(2)}
             </Typography>
@@ -293,6 +365,10 @@ const styles = StyleSheet.create({
   personOptionSelected: {
     borderColor: colors.error,
     backgroundColor: colors.errorLight,
+  },
+  payerOptionSelected: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryPale,
   },
   deleteButton: {
     minHeight: 48,
