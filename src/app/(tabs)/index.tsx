@@ -8,6 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { timeAgo } from "@/utils/date";
+import ExpenseTile from "@/components/ExpenseTile";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -15,17 +16,16 @@ export default function HomeScreen() {
   const { expenses } = useExpensesStore();
   const recentExpenses = expenses.slice(-3);
 
+  const name = "Hannah";
+
   return (
     <>
       <StatusBar style="dark" />
       <ScrollView
         style={styles.screen}
-        contentContainerStyle={[
-          styles.container,
-          { paddingTop: safeAreaInsets.top },
-        ]}
+        contentContainerStyle={[styles.container]}
       >
-        <Typography variant="h1">Home</Typography>
+        <Typography variant="h2">Welcome, {name}!</Typography>
 
         <Button
           variant="primary"
@@ -34,48 +34,24 @@ export default function HomeScreen() {
           onPress={() => router.push("/screens/addExpense")}
         />
 
-        <Typography variant="h2">Recent expenses</Typography>
+        <Typography variant="h3">Recent expenses</Typography>
         {recentExpenses.map((expense) => (
-          <Pressable
-            key={expense.id}
-            accessibilityRole="button"
+          <ExpenseTile
+            id={expense.id}
             onPress={() =>
               router.push({
                 pathname: "/screens/expense/[id]",
                 params: { id: expense.id },
               })
             }
-          >
-            <Typography variant="h4">{expense.name}</Typography>
-            <Typography variant="body">
-              Total: ${expense.total.toFixed(2)}
-            </Typography>
-            <Typography variant="bodySmall">{timeAgo(expense.date)}</Typography>
-          </Pressable>
+            name={expense.name}
+            amount={expense.total.toFixed(2)}
+            date={timeAgo(expense.date)}
+            people={expense.people}
+          />
         ))}
       </ScrollView>
     </>
-    // <FlatList
-    //   data={expenses}
-    //   keyExtractor={(item, index) => `${index}-${item.name}`}
-    //   renderItem={({ item }) => (
-    //     <Typography variant="h4">{item.name}</Typography>
-    //   )}
-    //   ListHeaderComponent={<Typography variant="h1">Expenses</Typography>}
-    //   ListFooterComponent={
-    //     <Button
-    //       variant="primary"
-    //       fullWidth
-    //       title="Add expense"
-    //       onPress={() => router.push("/screens/addExpense")}
-    //     />
-    //   }
-    //   contentContainerStyle={[
-    //     styles.contentContainer,
-    //     contentPlatformStyle,
-    //     { paddingTop: insets.top },
-    //   ]}
-    // />
   );
 }
 
@@ -86,18 +62,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    // justifyContent: "center",
-    // alignItems: "center",
+
     backgroundColor: colors.background,
     paddingHorizontal: spacing.base,
-    gap: spacing.s,
-  },
-  contentContainer: {
-    // flexDirection: "row",
-    // justifyContent: "center",
-    flexGrow: 1,
-    backgroundColor: colors.background,
-    padding: spacing.s,
     gap: spacing.s,
   },
 

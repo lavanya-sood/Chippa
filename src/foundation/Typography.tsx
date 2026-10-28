@@ -12,6 +12,9 @@ export type TypographyVariant =
   | "h2"
   | "h3"
   | "h4"
+  | "h5"
+  | "h6"
+  | "h7"
   | "bodyLarge"
   | "body"
   | "bodySmall"
@@ -75,6 +78,24 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "500",
     lineHeight: 28,
+  },
+  h5: {
+    fontFamily: "Fredoka-Medium",
+    fontSize: 18,
+    fontWeight: "500",
+    lineHeight: 24,
+  },
+  h6: {
+    fontFamily: "Fredoka-Medium",
+    fontSize: 16,
+    fontWeight: "500",
+    lineHeight: 24,
+  },
+  h7: {
+    fontFamily: "Fredoka-Medium",
+    fontSize: 14,
+    fontWeight: "500",
+    lineHeight: 20,
   },
 
   // Body text

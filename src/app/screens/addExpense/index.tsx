@@ -4,6 +4,7 @@ import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
 import { usePeopleStore, useExpensesStore } from "@/state";
+import { SELF_PERSON_ID } from "@/constants/people";
 import { formatDate } from "@/utils/date";
 import { Expense } from "@/types/index";
 import { generateShortId } from "@/utils/id";
@@ -24,8 +25,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
-
-const SELF_ID = "000";
 
 export default function AddExpense() {
   const router = useRouter();
@@ -119,7 +118,7 @@ export default function AddExpense() {
       updateExpense(editingExpense.id, {
         name,
         date: date.toString(),
-        people: peopleList,
+        people: [...new Set([SELF_PERSON_ID, ...peopleList])],
         paidBy,
       });
     } else {
@@ -128,7 +127,7 @@ export default function AddExpense() {
         name,
         date: date.toString(),
         total: 0,
-        people: peopleList,
+        people: [...new Set([SELF_PERSON_ID, ...peopleList])],
         ...(paidBy ? { paidBy } : {}),
         items: [],
       };
@@ -253,6 +252,7 @@ export default function AddExpense() {
       )}
       <View>
         <Typography variant="h3">People</Typography>
+        <Text style={styles.selectedPerson}>You (included)</Text>
         {people.map((item) => (
           <Pressable
             key={item.id}
@@ -292,17 +292,17 @@ export default function AddExpense() {
         </Pressable>
         <Pressable
           accessibilityRole="radio"
-          accessibilityState={{ selected: paidBy === SELF_ID }}
-          onPress={() => selectPayer(SELF_ID)}
+          accessibilityState={{ selected: paidBy === SELF_PERSON_ID }}
+          onPress={() => selectPayer(SELF_PERSON_ID)}
           style={[
             styles.payerOption,
-            paidBy === SELF_ID && styles.payerOptionSelected,
+            paidBy === SELF_PERSON_ID && styles.payerOptionSelected,
           ]}
         >
           <Typography variant="body" color={colors.textPrimary}>
             You
           </Typography>
-          {paidBy === SELF_ID && (
+          {paidBy === SELF_PERSON_ID && (
             <MaterialDesignIcons
               name="check"
               size={20}

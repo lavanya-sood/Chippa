@@ -3,6 +3,7 @@ import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
 import { useExpensesStore, usePeopleStore } from "@/state";
+import { SELF_PERSON_ID } from "@/constants/people";
 import { PersonBalance } from "@/types";
 import { formatDate } from "@/utils/date";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
@@ -52,7 +53,8 @@ export default function ExpenseDetails() {
     string,
     { paidCents: number; owesCents: number }
   >();
-  const personIds = new Set(["000", ...expense.people]);
+  const participantIds = [...new Set([SELF_PERSON_ID, ...expense.people])];
+  const personIds = new Set(participantIds);
 
   for (const item of expense.items) {
     const itemTotalCents = Math.round(item.amount * item.quantity * 100);
@@ -95,7 +97,7 @@ export default function ExpenseDetails() {
     return {
       personId,
       personName:
-        personId === "000"
+        personId === SELF_PERSON_ID
           ? "You"
           : people.find((person) => person.id === personId)?.name ?? personId,
       paid,
@@ -151,18 +153,21 @@ export default function ExpenseDetails() {
 
         <View style={styles.section}>
           <Typography variant="h3">People</Typography>
-          {expense.people.length ? (
-            expense.people.map((personId) => {
-              const person = people.find((entry) => entry.id === personId);
-              return person ? (
-                <Typography key={person.id} variant="body">
-                  {person.name}
+          {participantIds.map((personId) => {
+            if (personId === SELF_PERSON_ID) {
+              return (
+                <Typography key={personId} variant="body">
+                  You
                 </Typography>
-              ) : null;
-            })
-          ) : (
-            <Typography variant="bodySmall">No people added</Typography>
-          )}
+              );
+            }
+            const person = people.find((entry) => entry.id === personId);
+            return person ? (
+              <Typography key={person.id} variant="body">
+                {person.name}
+              </Typography>
+            ) : null;
+          })}
         </View>
 
         <View style={styles.section}>

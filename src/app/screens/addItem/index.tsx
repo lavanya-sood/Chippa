@@ -4,6 +4,7 @@ import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
 import { useExpensesStore, usePeopleStore } from "@/state";
+import { SELF_PERSON_ID } from "@/constants/people";
 import { Item } from "@/types";
 import { generateShortId } from "@/utils/id";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
@@ -19,8 +20,6 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const SELF_ID = "000";
 
 export default function AddExpenseItem() {
   const router = useRouter();
@@ -176,24 +175,27 @@ export default function AddExpenseItem() {
               <Typography variant="h3">Who had this item?</Typography>
               <Pressable
                 accessibilityRole="checkbox"
-                accessibilityState={{ checked: sharedBy.includes(SELF_ID) }}
-                onPress={() => togglePerson(SELF_ID)}
+                accessibilityState={{
+                  checked: sharedBy.includes(SELF_PERSON_ID),
+                }}
+                onPress={() => togglePerson(SELF_PERSON_ID)}
                 style={[
                   styles.personOption,
-                  sharedBy.includes(SELF_ID) && styles.personOptionSelected,
+                  sharedBy.includes(SELF_PERSON_ID) &&
+                    styles.personOptionSelected,
                 ]}
               >
                 <Typography
                   variant="body"
                   color={
-                    sharedBy.includes(SELF_ID)
+                    sharedBy.includes(SELF_PERSON_ID)
                       ? colors.error
                       : colors.textPrimary
                   }
                 >
                   You
                 </Typography>
-                {sharedBy.includes(SELF_ID) && (
+                {sharedBy.includes(SELF_PERSON_ID) && (
                   <MaterialDesignIcons
                     name="check"
                     size={20}
@@ -256,17 +258,17 @@ export default function AddExpenseItem() {
               </Pressable>
               <Pressable
                 accessibilityRole="radio"
-                accessibilityState={{ selected: paidBy === SELF_ID }}
-                onPress={() => setPaidBy(SELF_ID)}
+                accessibilityState={{ selected: paidBy === SELF_PERSON_ID }}
+                onPress={() => setPaidBy(SELF_PERSON_ID)}
                 style={[
                   styles.personOption,
-                  paidBy === SELF_ID && styles.payerOptionSelected,
+                  paidBy === SELF_PERSON_ID && styles.payerOptionSelected,
                 ]}
               >
                 <Typography variant="body" color={colors.textPrimary}>
                   You
                 </Typography>
-                {paidBy === SELF_ID && (
+                {paidBy === SELF_PERSON_ID && (
                   <MaterialDesignIcons
                     name="check"
                     size={20}

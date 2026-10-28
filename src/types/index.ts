@@ -2,6 +2,7 @@ export interface Person {
   name: string;
   id: string;
   expenses: string[];
+  logo?: string | null;
 }
 
 export interface Item {
