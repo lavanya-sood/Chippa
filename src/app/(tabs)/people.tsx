@@ -45,7 +45,11 @@ function PersonRow({
       </View>
       <View style={styles.personDetails}>
         <Typography variant="h6">{person.name}</Typography>
-        <Typography variant="bodySmall" color={colors.textSecondary} numberOfLines={1}>
+        <Typography
+          variant="bodySmall"
+          color={colors.textSecondary}
+          numberOfLines={1}
+        >
           {person.notes?.trim() || "No notes"}
         </Typography>
       </View>
@@ -113,7 +117,11 @@ export default function PeopleScreen() {
                 pressed && styles.pressed,
               ]}
             >
-              <MaterialDesignIcons name="plus" size={28} color={colors.primary} />
+              <MaterialDesignIcons
+                name="plus"
+                size={28}
+                color={colors.peachDark}
+              />
             </Pressable>
           </View>
           <View style={styles.searchBox}>
@@ -144,7 +152,11 @@ export default function PeopleScreen() {
         </View>
       }
       ListEmptyComponent={
-        <Typography variant="body" color={colors.textSecondary} style={styles.empty}>
+        <Typography
+          variant="body"
+          color={colors.textSecondary}
+          style={styles.empty}
+        >
           {search.trim()
             ? "No people match your search."
             : "No people yet. Add someone to get started."}
@@ -153,7 +165,7 @@ export default function PeopleScreen() {
       contentContainerStyle={[
         styles.contentContainer,
         contentPlatformStyle,
-        { paddingTop: insets.top + spacing.xs },
+        { paddingTop: spacing.xs },
       ]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
