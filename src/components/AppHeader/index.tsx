@@ -7,16 +7,21 @@ import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-
 interface AppHeaderProps {
   title: string;
   onBackPress: () => void;
+  rightIcon?: React.ReactNode;
 }
 
-export default function AppHeader({ title, onBackPress }: AppHeaderProps) {
+export default function AppHeader({
+  title,
+  onBackPress,
+  rightIcon,
+}: AppHeaderProps) {
   return (
     <View style={styles.header}>
       <Pressable onPress={onBackPress}>
         <MaterialDesignIcons name="chevron-left" size={40} color="black" />
       </Pressable>
       <Typography variant="h3">{title}</Typography>
-      <View></View>
+      <View>{rightIcon}</View>
     </View>
   );
 }
