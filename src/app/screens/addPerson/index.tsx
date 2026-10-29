@@ -8,7 +8,7 @@ import { Typography } from "@/foundation/Typography";
 import { usePeopleStore } from "@/state";
 import type { Person as PersonModel } from "@/types";
 import { generateShortId } from "@/utils/id";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -16,6 +16,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,24 +24,40 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function AddPerson() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
-  const { people, addPerson } = usePeopleStore();
-  const [newPerson, setNewPerson] = useState("");
+  const { personId } = useLocalSearchParams<{ personId?: string }>();
+  const people = usePeopleStore((state) => state.people);
+  const addPerson = usePeopleStore((state) => state.addPerson);
+  const updatePerson = usePeopleStore((state) => state.updatePerson);
+  const existingPerson = people.find((person) => person.id === personId);
+  const [newPerson, setNewPerson] = useState(
+    () => existingPerson?.name ?? "",
+  );
+  const [notes, setNotes] = useState(() => existingPerson?.notes ?? "");
   const [avatarColor, setAvatarColor] = useState(
-    personAvatarColors[0].color,
+    () => existingPerson?.avatarColor ?? personAvatarColors[0].color,
   );
 
-  const addNewPerson = () => {
+  const savePerson = () => {
     const personValue = newPerson.trim();
 
     if (personValue.length === 0) return;
 
-    const newPersonItem: PersonModel = {
-      id: generateShortId(people.length),
-      name: personValue,
-      expenses: [],
-      avatarColor,
-    };
-    addPerson(newPersonItem);
+    if (existingPerson) {
+      updatePerson(existingPerson.id, {
+        name: personValue,
+        notes: notes.trim(),
+        avatarColor,
+      });
+    } else {
+      const newPersonItem: PersonModel = {
+        id: generateShortId(people.length),
+        name: personValue,
+        expenses: [],
+        notes: notes.trim(),
+        avatarColor,
+      };
+      addPerson(newPersonItem);
+    }
     router.back();
   };
 
@@ -54,7 +71,10 @@ export default function AddPerson() {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
-        <AppHeader title="Add person" onBackPress={() => router.back()} />
+        <AppHeader
+          title={existingPerson ? "Edit person" : "Add person"}
+          onBackPress={() => router.back()}
+        />
 
         <View style={styles.form}>
           <TextField
@@ -64,8 +84,22 @@ export default function AddPerson() {
             placeholder="Enter the name"
           />
 
+          <View>
+            <Typography variant="label">Notes (optional)</Typography>
+            <TextInput
+              accessibilityLabel="Notes (optional)"
+              value={notes}
+              onChangeText={setNotes}
+              placeholder="Work friend, roommate, family etc."
+              placeholderTextColor={colors.textDisabled}
+              multiline
+              textAlignVertical="top"
+              style={styles.notesInput}
+            />
+          </View>
+
           <View style={styles.colorSection}>
-            <Typography variant="label">Icon colour</Typography>
+            <Typography variant="label">Avatar colour</Typography>
             <View style={styles.preview}>
               <Person
                 name={newPerson.trim() || "Preview"}
@@ -108,8 +142,8 @@ export default function AddPerson() {
         <Button
           variant="primary"
           fullWidth
-          title="Add person"
-          onPress={addNewPerson}
+          title={existingPerson ? "Save changes" : "Add person"}
+          onPress={savePerson}
           disabled={!newPerson.trim()}
         />
       </View>
@@ -133,6 +167,19 @@ const styles = StyleSheet.create({
   form: {
     marginTop: spacing.base,
     gap: spacing.l,
+  },
+  notesInput: {
+    minHeight: 120,
+    marginTop: spacing.xxs,
+    paddingHorizontal: spacing.s,
+    paddingVertical: spacing.s,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: spacing.s,
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
+    fontFamily: "Fredoka-Regular",
+    fontSize: 16,
   },
   colorSection: {
     gap: spacing.s,

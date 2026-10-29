@@ -4,6 +4,7 @@ export interface Person {
   name: string;
   id: string;
   expenses: string[];
+  notes?: string;
   avatarColor?: PersonAvatarColor;
   logo?: string | null;
 }

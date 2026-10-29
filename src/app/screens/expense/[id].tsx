@@ -37,19 +37,9 @@ export default function ExpenseDetails() {
           { paddingTop: safeAreaInsets.top },
         ]}
       >
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
-          <MaterialDesignIcons
-            name="chevron-left"
-            size={24}
-            color={colors.textPrimary}
-          />
-          <Typography variant="body">Back</Typography>
-        </Pressable>
+        <View style={styles.headerView}>
+          <AppHeader title={""} onBackPress={() => router.back()} />
+        </View>
         <Typography variant="h3">Expense not found</Typography>
       </View>
     );
@@ -144,32 +134,31 @@ export default function ExpenseDetails() {
         },
       ]}
     >
-      <AppHeader
-        title={""}
-        onBackPress={() => router.back()}
-        rightIcon={
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Edit expense"
-            onPress={() =>
-              router.push({
-                pathname: "/screens/addExpense",
-                params: { id: expense.id },
-              })
-            }
-            style={styles.editButton}
-          >
-            <MaterialDesignIcons
-              name="pencil-outline"
-              size={18}
-              color={colors.primary}
-            />
-            <Typography variant="bodySmall" color={colors.primary}>
-              Edit
-            </Typography>
-          </Pressable>
-        }
-      />
+      <View style={styles.headerView}>
+        <AppHeader
+          title={""}
+          onBackPress={() => router.back()}
+          rightIcon={
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Edit expense"
+              onPress={() =>
+                router.push({
+                  pathname: "/screens/addExpense",
+                  params: { id: expense.id },
+                })
+              }
+              style={styles.editButton}
+            >
+              <MaterialDesignIcons
+                name="pencil-outline"
+                size={28}
+                color={colors.black}
+              />
+            </Pressable>
+          }
+        />
+      </View>
       <View style={styles.header}>
         <Typography variant="h2" style={styles.expenseName}>
           {expense.name}
@@ -439,18 +428,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    // paddingHorizontal: spacing.base,
+  },
+  headerView: {
+    paddingHorizontal: spacing.base,
   },
   notFound: {
     padding: spacing.base,
     gap: spacing.s,
-  },
-  backButton: {
-    minHeight: 44,
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    gap: spacing.xxs,
   },
   header: {
     paddingHorizontal: spacing.base,
