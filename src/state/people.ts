@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { Person } from "@/types/index";
+import type { Person } from "@/types/models";
 import { reportHydrationError } from "./persistence";
 
 interface PeopleStore {

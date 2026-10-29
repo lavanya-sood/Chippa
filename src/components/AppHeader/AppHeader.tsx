@@ -1,7 +1,7 @@
 import { colors } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
 import { TextInput, Pressable, TextInputProps, View } from "react-native";
-import { styles } from "./styles";
+import { styles } from "./styles/styles";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 
 interface AppHeaderProps {

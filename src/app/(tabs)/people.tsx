@@ -11,13 +11,13 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 
-import Button from "@/components/Button";
+import Button from "@/components/Button/Button";
 
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { usePeopleStore } from "@/state";
-import type { Person } from "@/types";
+import { usePeopleStore } from "@/state/stores";
+import type { Person } from "@/types/models";
 
 function PersonRow({
   person,

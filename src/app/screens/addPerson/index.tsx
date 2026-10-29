@@ -1,12 +1,12 @@
-import AppHeader from "@/components/AppHeader";
-import Button from "@/components/Button";
-import Person from "@/components/Person";
-import TextField from "@/components/TextField";
+import AppHeader from "@/components/AppHeader/AppHeader";
+import Button from "@/components/Button/Button";
+import Person from "@/components/Person/Person";
+import TextField from "@/components/TextField/TextField";
 import { colors, personAvatarColors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { usePeopleStore } from "@/state";
-import type { Person as PersonModel } from "@/types";
+import { usePeopleStore } from "@/state/stores";
+import type { Person as PersonModel } from "@/types/models";
 import { generateShortId } from "@/utils/id";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";

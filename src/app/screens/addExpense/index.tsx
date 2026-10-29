@@ -1,20 +1,21 @@
-import Button from "@/components/Button";
-import TextField from "@/components/TextField";
+import Button from "@/components/Button/Button";
+import TextField from "@/components/TextField/TextField";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { usePeopleStore, useExpensesStore } from "@/state";
+import { usePeopleStore, useExpensesStore } from "@/state/stores";
 import { SELF_PERSON_ID } from "@/constants/people";
-import Dropdown, { type DropdownOption } from "@/components/Dropdown";
+import Dropdown, { type DropdownOption } from "@/components/Dropdown/Dropdown";
 import { formatDate } from "@/utils/date";
-import { Expense } from "@/types/index";
+import { Expense } from "@/types/models";
 import { generateShortId } from "@/utils/id";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { styles } from "./styles";
+import { styles } from "./styles/style";
+
 import {
   Alert,
   Platform,
@@ -25,9 +26,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
-import AppHeader from "@/components/AppHeader";
-import DatePicker from "@/components/DatePicker";
-import Person from "@/components/Person";
+import AppHeader from "@/components/AppHeader/AppHeader";
+import DatePicker from "@/components/DatePicker/DatePicker";
+import Person from "@/components/Person/Person";
 
 export default function AddExpense() {
   const router = useRouter();

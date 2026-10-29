@@ -1,25 +1,25 @@
 import { colors } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
 import { TextInput, Pressable, TextInputProps, View } from "react-native";
-import { styles } from "./styles";
+import { styles } from "./styles/styles";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
-import Button from "@/components/Button";
+import Button from "@/components/Button/Button";
 
-import { useExpensesStore } from "@/state/index";
+import { useExpensesStore } from "@/state/stores";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { timeAgo } from "@/utils/date";
-import ExpenseTile from "@/components/ExpenseTile";
+import ExpenseTile from "@/components/ExpenseTile/ExpenseTile";
 
-import TextField from "@/components/TextField";
+import TextField from "@/components/TextField/TextField";
 
 import { spacing } from "@/foundation/spacing";
-import { usePeopleStore } from "@/state";
+import { usePeopleStore } from "@/state/stores";
 import { SELF_PERSON_ID } from "@/constants/people";
 import { formatDate } from "@/utils/date";
-import { Expense } from "@/types/index";
+import { Expense } from "@/types/models";
 import { generateShortId } from "@/utils/id";
 import DateTimePicker, {
   DateTimePickerEvent,

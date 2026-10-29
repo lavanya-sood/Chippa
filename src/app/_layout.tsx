@@ -3,7 +3,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { Text, useColorScheme, View } from "react-native";
-import { useExpensesStore, usePeopleStore } from "@/state";
+import { useExpensesStore, usePeopleStore } from "@/state/stores";
 import {
   getHydrationError,
   subscribeToHydrationError,

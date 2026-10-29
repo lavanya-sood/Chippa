@@ -3,7 +3,7 @@ import { colors } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
 import { useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
-import { styles } from "./styles";
+import { styles } from "./styles/styles";
 
 export interface DropdownOption {
   value: string;

@@ -1,11 +1,11 @@
-import Button from "@/components/Button";
-import TextField from "@/components/TextField";
+import Button from "@/components/Button/Button";
+import TextField from "@/components/TextField/TextField";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { useExpensesStore, usePeopleStore } from "@/state";
+import { useExpensesStore, usePeopleStore } from "@/state/stores";
 import { SELF_PERSON_ID } from "@/constants/people";
-import { Item } from "@/types";
+import { Item } from "@/types/models";
 import { generateShortId } from "@/utils/id";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";

@@ -2,7 +2,7 @@ import { colors } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
 import type { PersonAvatarColor } from "@/foundation/colors";
 import { View } from "react-native";
-import { styles } from "./styles";
+import { styles } from "./styles/styles";
 
 interface PersonProps {
   name: string;

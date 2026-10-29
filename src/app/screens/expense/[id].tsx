@@ -1,11 +1,11 @@
-import AppHeader from "@/components/AppHeader";
-import Button from "@/components/Button";
+import AppHeader from "@/components/AppHeader/AppHeader";
+import Button from "@/components/Button/Button";
 import { SELF_PERSON_ID } from "@/constants/people";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { useExpensesStore, usePeopleStore } from "@/state";
-import type { PersonBalance } from "@/types";
+import { useExpensesStore, usePeopleStore } from "@/state/stores";
+import type { PersonBalance } from "@/types/models";
 import { formatDate } from "@/utils/date";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";

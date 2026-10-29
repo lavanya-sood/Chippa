@@ -1,9 +1,9 @@
-import AppHeader from "@/components/AppHeader";
-import Button from "@/components/Button";
+import AppHeader from "@/components/AppHeader/AppHeader";
+import Button from "@/components/Button/Button";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { usePeopleStore } from "@/state";
+import { usePeopleStore } from "@/state/stores";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";

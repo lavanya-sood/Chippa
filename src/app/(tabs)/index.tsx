@@ -1,14 +1,14 @@
-import Button from "@/components/Button";
+import Button from "@/components/Button/Button";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { useExpensesStore } from "@/state/index";
+import { useExpensesStore } from "@/state/stores";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { timeAgo } from "@/utils/date";
-import ExpenseTile from "@/components/ExpenseTile";
+import ExpenseTile from "@/components/ExpenseTile/ExpenseTile";
 
 export default function HomeScreen() {
   const router = useRouter();
