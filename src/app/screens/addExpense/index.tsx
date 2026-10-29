@@ -5,6 +5,7 @@ import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
 import { usePeopleStore, useExpensesStore } from "@/state";
 import { SELF_PERSON_ID } from "@/constants/people";
+import Dropdown, { type DropdownOption } from "@/components/Dropdown";
 import { formatDate } from "@/utils/date";
 import { Expense } from "@/types/index";
 import { generateShortId } from "@/utils/id";
@@ -47,18 +48,11 @@ export default function AddExpense() {
   const [peopleList, setPeopleList] = useState<string[]>(
     () => editingExpense?.people ?? [],
   );
-  const [paidBy, setPaidBy] = useState<string | undefined>(
-    () => editingExpense?.paidBy,
-  );
-  const [isPayerMenuOpen, setIsPayerMenuOpen] = useState(false);
+  const [paidBy, setPaidBy] = useState(() => editingExpense?.paidBy ?? "");
   const { people } = usePeopleStore();
   const availablePayers = people.filter((person) =>
     peopleList.includes(person.id),
   );
-  const selectedPayer =
-    paidBy === SELF_PERSON_ID
-      ? { name: "You" }
-      : availablePayers.find((person) => person.id === paidBy);
 
   const goBack = () => {
     router.back();
@@ -109,14 +103,47 @@ export default function AddExpense() {
       isSelected ? prev.filter((personId) => personId !== id) : [...prev, id],
     );
     if (isSelected && paidBy === id) {
-      setPaidBy(undefined);
+      setPaidBy("");
     }
   };
 
-  const selectPayer = (id?: string) => {
-    setPaidBy(id);
-    setIsPayerMenuOpen(false);
-  };
+  const payerIcon = (
+    avatarColor: string,
+    iconName: "account" | "account-off-outline" = "account",
+  ) => (
+    <View style={[styles.payerAvatar, { backgroundColor: avatarColor }]}>
+      <MaterialDesignIcons
+        name={iconName}
+        size={24}
+        color={
+          iconName === "account-off-outline"
+            ? colors.textSecondary
+            : colors.textPrimary
+        }
+      />
+    </View>
+  );
+
+  const payerOptions: DropdownOption[] = [
+    {
+      value: "",
+      label: "No payer assigned",
+      description: "No individual selected",
+      icon: payerIcon(colors.surface, "account-off-outline"),
+    },
+    {
+      value: SELF_PERSON_ID,
+      label: "You",
+      description: "Paid for this expense",
+      icon: payerIcon(colors.avatarPink),
+    },
+    ...availablePayers.map((person) => ({
+      value: person.id,
+      label: person.name,
+      description: "Paid for this expense",
+      icon: payerIcon(person.avatarColor ?? colors.avatarPink),
+    })),
+  ];
 
   const saveExpense = () => {
     const name = expenseName.trim();
@@ -127,7 +154,7 @@ export default function AddExpense() {
         name,
         date: date.toString(),
         people: [...new Set([SELF_PERSON_ID, ...peopleList])],
-        paidBy,
+        paidBy: paidBy || undefined,
       });
     } else {
       const expenseItem: Expense = {
@@ -198,7 +225,10 @@ export default function AddExpense() {
           />
 
           <View>
-            <Typography variant="label">People</Typography>
+            <Typography variant="h4">People</Typography>
+            <Typography variant="bodySmall" color={colors.textSecondary}>
+              Select who was part of the expense
+            </Typography>
             <View>
               <ScrollView
                 horizontal
@@ -226,102 +256,14 @@ export default function AddExpense() {
             </View>
           </View>
 
-          <View style={styles.payerSection}>
-            <Typography variant="label">Who paid? (optional)</Typography>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={
-                selectedPayer
-                  ? `Payer: ${selectedPayer.name}`
-                  : "Select a payer"
-              }
-              accessibilityState={{ expanded: isPayerMenuOpen }}
-              onPress={() => setIsPayerMenuOpen((isOpen) => !isOpen)}
-              style={styles.payerDropdown}
-            >
-              <View style={styles.payerAvatar}>
-                <MaterialDesignIcons
-                  name="account"
-                  size={24}
-                  color={colors.textPrimary}
-                />
-              </View>
-              <View style={styles.payerDropdownText}>
-                <Typography variant="body">
-                  {selectedPayer?.name ?? "Select a payer"}
-                </Typography>
-                <Typography variant="bodySmall" color={colors.textSecondary}>
-                  {selectedPayer
-                    ? "Paid for this expense"
-                    : "No payer selected"}
-                </Typography>
-              </View>
-              <MaterialDesignIcons
-                name={isPayerMenuOpen ? "chevron-up" : "chevron-down"}
-                size={24}
-                color={colors.textSecondary}
-              />
-            </Pressable>
-            {isPayerMenuOpen && (
-              <View style={styles.payerOptions}>
-                <Pressable
-                  accessibilityRole="radio"
-                  accessibilityLabel="No payer selected"
-                  accessibilityState={{ selected: paidBy === undefined }}
-                  onPress={() => selectPayer(undefined)}
-                  style={styles.payerOption}
-                >
-                  <View style={styles.payerAvatar}>
-                    <MaterialDesignIcons
-                      name="account-off-outline"
-                      size={24}
-                      color={colors.textSecondary}
-                    />
-                  </View>
-                  <Typography variant="body">No payer</Typography>
-                </Pressable>
-                <Pressable
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: paidBy === SELF_PERSON_ID }}
-                  onPress={() => selectPayer(SELF_PERSON_ID)}
-                  style={[
-                    styles.payerOption,
-                    paidBy === SELF_PERSON_ID && styles.payerOptionSelected,
-                  ]}
-                >
-                  <View style={styles.payerAvatar}>
-                    <MaterialDesignIcons
-                      name="account"
-                      size={24}
-                      color={colors.textPrimary}
-                    />
-                  </View>
-                  <Typography variant="body">You</Typography>
-                </Pressable>
-                {availablePayers.map((person) => (
-                  <Pressable
-                    key={person.id}
-                    accessibilityRole="radio"
-                    accessibilityState={{ selected: paidBy === person.id }}
-                    onPress={() => selectPayer(person.id)}
-                    style={[
-                      styles.payerOption,
-                      paidBy === person.id && styles.payerOptionSelected,
-                    ]}
-                  >
-                    <View style={styles.payerAvatar}>
-                      <MaterialDesignIcons
-                        name="account"
-                        size={24}
-                        color={colors.textPrimary}
-                      />
-                    </View>
-                    <Typography variant="body">{person.name}</Typography>
-                  </Pressable>
-                ))}
-              </View>
-            )}
-          </View>
+          <Dropdown
+            label="Who paid? (optional)"
+            value={paidBy}
+            options={payerOptions}
+            onChange={setPaidBy}
+            placeholder="Nothing selected"
+            subheading="Select who paid for the expense"
+          />
         </View>
       </ScrollView>
 

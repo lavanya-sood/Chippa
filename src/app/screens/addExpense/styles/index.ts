@@ -32,23 +32,6 @@ export const styles = StyleSheet.create({
   selectedPerson: {
     color: colors.error,
   },
-  payerSection: {
-    gap: spacing.xxs,
-  },
-  payerDropdown: {
-    minHeight: 80,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.s,
-    paddingHorizontal: spacing.s,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: spacing.base,
-    backgroundColor: colors.surface,
-  },
-  payerDropdownText: {
-    flex: 1,
-  },
   payerAvatar: {
     width: 44,
     height: 44,
@@ -56,25 +39,6 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 22,
     backgroundColor: colors.avatarPink,
-  },
-  payerOptions: {
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: spacing.s,
-    backgroundColor: colors.surface,
-  },
-  payerOption: {
-    minHeight: 56,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.s,
-    paddingHorizontal: spacing.s,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-  },
-  payerOptionSelected: {
-    backgroundColor: colors.primaryPale,
   },
   deleteButton: {
     minHeight: 48,

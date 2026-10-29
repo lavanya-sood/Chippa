@@ -26,7 +26,7 @@ export default function Person({
         <View style={[styles.personIcon, { backgroundColor: avatarColor }]} />
       </View>
       <Typography
-        variant={selected ? "h5" : "body"}
+        variant={selected ? "h6" : "body"}
         style={[styles.personName]}
       >
         {name}
