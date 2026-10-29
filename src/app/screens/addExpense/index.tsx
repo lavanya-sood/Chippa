@@ -6,24 +6,13 @@ import { Typography } from "@/foundation/Typography";
 import { usePeopleStore, useExpensesStore } from "@/state/stores";
 import { SELF_PERSON_ID } from "@/constants/people";
 import Dropdown, { type DropdownOption } from "@/components/Dropdown/Dropdown";
-import { formatDate } from "@/utils/date";
 import { Expense } from "@/types/models";
 import { generateShortId } from "@/utils/id";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { styles } from "./styles/style";
-
-import {
-  Alert,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { Alert, Platform, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import AppHeader from "@/components/AppHeader/AppHeader";
@@ -44,7 +33,6 @@ export default function AddExpense() {
     editingExpense ? new Date(editingExpense.date) : new Date(),
   );
   const [pickerDate, setPickerDate] = useState(date);
-  const [mode, setMode] = useState<"date" | "time">("date");
   const [show, setShow] = useState<boolean>(false);
   const [peopleList, setPeopleList] = useState<string[]>(
     () => editingExpense?.people ?? [],
@@ -60,37 +48,24 @@ export default function AddExpense() {
   };
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    // On Android, dismissing the picker returns an 'dismissed' event
     if (event.type === "dismissed") {
       setShow(false);
       return;
     }
 
-    const currentDate = selectedDate || date;
-
-    // For Android, we cycle from Date Picker -> Time Picker to collect both values.
-    if (Platform.OS === "android") {
-      setShow(false); // Hide the completed picker mode
-      if (mode === "date") {
-        setDate(currentDate);
-        setMode("time");
-        // Small timeout allows the UI thread to smoothly transition between dialogs
-        setTimeout(() => setShow(true), 100);
-      } else {
-        setDate(currentDate);
-        setMode("date"); // Reset back to date for next opening
-      }
-    } else if (selectedDate) {
+    if (Platform.OS === "ios" && selectedDate) {
       setPickerDate(selectedDate);
+    } else if (selectedDate) {
+      setDate(selectedDate);
+      setShow(false);
     }
   };
 
-  const showPicker = (currentMode: "date" | "time") => {
+  const showPicker = () => {
     if (Platform.OS === "ios") {
       setPickerDate(date);
     }
     setShow(true);
-    setMode(currentMode);
   };
 
   const savePickerDate = () => {
@@ -214,11 +189,10 @@ export default function AddExpense() {
           />
 
           <DatePicker
-            onPickerPress={() => showPicker("date")}
+            onPickerPress={showPicker}
             dateValue={date}
             show={show}
             onChange={onChange}
-            mode={mode}
             onRequestClose={() => setShow(false)}
             pickerDate={pickerDate}
             savePickerDate={savePickerDate}

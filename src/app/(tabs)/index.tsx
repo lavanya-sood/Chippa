@@ -6,17 +6,10 @@ import { Typography } from "@/foundation/Typography";
 import { useExpensesStore, usePeopleStore } from "@/state/stores";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ScrollView, StyleSheet } from "react-native";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { timeAgo } from "@/utils/date";
 import ExpenseTile from "@/components/ExpenseTile/ExpenseTile";
-
-import { useState } from "react";
-import { FlatList, Platform, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
-
-import SearchBox from "@/components/SearchBox/SearchBox";
-import PersonTile from "@/components/PersonTile/PersonTile";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -57,7 +50,15 @@ export default function HomeScreen() {
           onPress={() => router.push("/screens/addExpense")}
         />
 
-        <Typography variant="h3">Recent expenses</Typography>
+        <View style={styles.expensesHeading}>
+          <Typography variant="h3">Recent expenses</Typography>
+
+          <Button
+            variant="text"
+            title={"See all"}
+            onPress={() => router.push("/screens/expenses")}
+          />
+        </View>
         {recentExpenses.map((expense) => (
           <ExpenseTile
             id={expense.id}
@@ -101,6 +102,18 @@ const styles = StyleSheet.create({
     backgroundColor: "pink",
     padding: 12,
     marginTop: 12,
+  },
+  expensesHeading: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  seeAllButton: {
+    paddingVertical: spacing.xxs,
+    paddingHorizontal: spacing.xs,
+  },
+  pressed: {
+    opacity: 0.75,
   },
   buttonGroup: {
     width: "100%",
