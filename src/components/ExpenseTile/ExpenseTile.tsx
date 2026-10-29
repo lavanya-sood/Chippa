@@ -1,8 +1,11 @@
-import { colors } from "@/foundation/colors";
+import { colors, getPersonAvatarTextColor } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
-import { TextInput, Pressable, TextInputProps, View } from "react-native";
+import type { Person } from "@/types/models";
+import { Pressable, View } from "react-native";
 import { styles } from "./styles/styles";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
+
+type ExpenseParticipant = Pick<Person, "id" | "name" | "avatarColor">;
 
 interface ExpenseTileProps {
   id: string;
@@ -10,7 +13,8 @@ interface ExpenseTileProps {
   name: string;
   amount: string;
   date: string;
-  people: string[];
+  people: ExpenseParticipant[];
+  peopleCount: number;
 }
 
 export default function ExpenseTile({
@@ -20,6 +24,7 @@ export default function ExpenseTile({
   amount,
   date,
   people,
+  peopleCount,
 }: ExpenseTileProps) {
   return (
     <Pressable
@@ -35,19 +40,30 @@ export default function ExpenseTile({
           <Typography variant="h6">${amount}</Typography>
         </View>
         <Typography variant="bodySmall" style={styles.subtitle}>
-          {date} • {people.length} people
+          {date} • {peopleCount} people
         </Typography>
         <View style={styles.footer}>
           <View style={styles.peopleIconList}>
-            {people.map((p) => (
-              <View key={p} style={styles.personIcon} />
+            {people.map((person) => (
+              <View
+                key={person.id}
+                style={[
+                  styles.personIcon,
+                  {
+                    backgroundColor: person.avatarColor ?? colors.avatarPink,
+                  },
+                ]}
+              >
+                <Typography
+                  variant="h7"
+                  color={getPersonAvatarTextColor(person.avatarColor)}
+                >
+                  {person.name.trim().charAt(0).toUpperCase()}
+                </Typography>
+              </View>
             ))}
           </View>
-          {/* <MaterialDesignIcons
-            name="chevron-right"
-            size={24}
-            color={colors.textPrimary}
-          /> */}
+
           <MaterialDesignIcons
             name="chevron-right"
             size={24}

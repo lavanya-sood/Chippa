@@ -38,7 +38,8 @@ export const styles = StyleSheet.create({
   personIcon: {
     width: 30,
     height: 30,
-    backgroundColor: colors.avatarPink,
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 30,
   },
   footer: {

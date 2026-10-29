@@ -85,3 +85,15 @@ export const personAvatarColors = [
 
 export type PersonAvatarColor =
   (typeof personAvatarColors)[number]["color"];
+
+const avatarTextColors: Record<PersonAvatarColor, string> = {
+  [colors.avatarPink]: colors.pinkDark,
+  [colors.avatarPeach]: colors.peachDark,
+  [colors.avatarYellow]: colors.yellowDark,
+  [colors.avatarSage]: colors.sageDark,
+  [colors.avatarLavender]: colors.lavenderDark,
+  [colors.avatarBlue]: colors.infoDark,
+};
+
+export const getPersonAvatarTextColor = (color?: PersonAvatarColor) =>
+  avatarTextColors[color ?? colors.avatarPink];

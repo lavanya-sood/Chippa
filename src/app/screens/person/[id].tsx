@@ -3,10 +3,18 @@ import Button from "@/components/Button/Button";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { usePeopleStore } from "@/state/stores";
+import { useExpensesStore, usePeopleStore } from "@/state/stores";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { formatDate } from "@/utils/date";
+import { useState } from "react";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function PersonProfileScreen() {
@@ -16,7 +24,17 @@ export default function PersonProfileScreen() {
   const person = usePeopleStore((state) =>
     state.people.find((item) => item.id === id),
   );
+  const expenses = useExpensesStore((state) => state.expenses);
   const removePerson = usePeopleStore((state) => state.removePerson);
+  const [showUsedInExpenses, setShowUsedInExpenses] = useState(false);
+
+  const usedInExpenses = person
+    ? expenses.filter(
+        (expense) =>
+          expense.people.includes(person.id) ||
+          expense.items.some((item) => item.sharedBy.includes(person.id)),
+      )
+    : [];
 
   const confirmDelete = () => {
     if (!person) return;
@@ -173,6 +191,78 @@ export default function PersonProfileScreen() {
           />
         </View>
       </View>
+
+      <View style={styles.usedIn}>
+        <Typography variant="h5">Used in</Typography>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{
+            disabled: usedInExpenses.length === 0,
+            expanded: showUsedInExpenses,
+          }}
+          disabled={usedInExpenses.length === 0}
+          onPress={() => setShowUsedInExpenses((isShown) => !isShown)}
+          style={({ pressed }) => [
+            styles.usedInSummary,
+            pressed && styles.pressed,
+            usedInExpenses.length === 0 && styles.usedInDisabled,
+          ]}
+        >
+          <View style={styles.usedInIcon}>
+            <MaterialDesignIcons
+              name="receipt-text-outline"
+              size={22}
+              color={colors.primary}
+            />
+          </View>
+          <Typography variant="body" style={styles.usedInCount}>
+            {usedInExpenses.length}{" "}
+            {usedInExpenses.length === 1 ? "split" : "splits"}
+          </Typography>
+          <MaterialDesignIcons
+            name={showUsedInExpenses ? "chevron-up" : "chevron-right"}
+            size={24}
+            color={colors.textTertiary}
+          />
+        </Pressable>
+        {showUsedInExpenses &&
+          usedInExpenses.map((expense) => (
+            <Pressable
+              key={expense.id}
+              accessibilityRole="button"
+              accessibilityLabel={`View ${expense.name}, ${formatDate(expense.date)}`}
+              onPress={() =>
+                router.push({
+                  pathname: "/screens/expense/[id]",
+                  params: { id: expense.id },
+                })
+              }
+              style={({ pressed }) => [
+                styles.usedInExpense,
+                pressed && styles.pressed,
+              ]}
+            >
+              <View style={styles.usedInIcon}>
+                <MaterialDesignIcons
+                  name="receipt-outline"
+                  size={20}
+                  color={colors.primary}
+                />
+              </View>
+              <View style={styles.usedInExpenseDetails}>
+                <Typography variant="body">{expense.name}</Typography>
+                <Typography variant="bodySmall" color={colors.textSecondary}>
+                  {formatDate(expense.date)}
+                </Typography>
+              </View>
+              <MaterialDesignIcons
+                name="chevron-right"
+                size={24}
+                color={colors.textTertiary}
+              />
+            </Pressable>
+          ))}
+      </View>
     </ScrollView>
   );
 }
@@ -230,5 +320,50 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
+  },
+  usedIn: {
+    gap: spacing.xs,
+  },
+  usedInSummary: {
+    minHeight: 56,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.s,
+    borderWidth: 1,
+    borderColor: colors.divider,
+    borderRadius: spacing.s,
+    backgroundColor: colors.surface,
+  },
+  usedInIcon: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 16,
+    backgroundColor: colors.primaryLight,
+  },
+  usedInCount: {
+    flex: 1,
+  },
+  usedInExpense: {
+    minHeight: 56,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.s,
+    borderWidth: 1,
+    borderColor: colors.divider,
+    borderRadius: spacing.s,
+    backgroundColor: colors.surface,
+  },
+  usedInExpenseDetails: {
+    flex: 1,
+  },
+  usedInDisabled: {
+    opacity: 0.65,
+  },
+  pressed: {
+    opacity: 0.75,
   },
 });

@@ -195,16 +195,16 @@ export default function AddExpense() {
 
   return (
     <View style={[styles.screen, { paddingTop: safeAreaInsets.top }]}>
+      <AppHeader
+        title={editingExpense ? "Edit expense" : "New expense"}
+        onBackPress={goBack}
+      />
+
       <ScrollView
         keyboardShouldPersistTaps="handled"
         style={styles.scrollView}
         contentContainerStyle={styles.container}
       >
-        <AppHeader
-          title={editingExpense ? "Edit expense" : "New expense"}
-          onBackPress={goBack}
-        />
-
         <View style={styles.form}>
           <TextField
             label="Expense name"
