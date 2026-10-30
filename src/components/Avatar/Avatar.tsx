@@ -1,33 +1,53 @@
-import { colors } from "@/foundation/colors";
+import { colors, getPersonAvatarTextColor } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
 import { Pressable, View } from "react-native";
 import { styles } from "./styles/styles";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
+import { generateInitials } from "@/utils/people";
+import { useMemo } from "react";
 
-interface AppHeaderProps {
-  title: string;
-  onBackPress: () => void;
-  rightIcon?: React.ReactNode;
+interface AvatarProps {
+  avatarColor?: string;
+  name?: string;
+  icon?: React.ReactNode;
+  size?: "small" | "medium" | "large";
 }
 
-const BACK_ICON_SIZE = 40;
-
 export default function Avatar({
-  title,
-  onBackPress,
-  rightIcon,
-}: AppHeaderProps) {
+  avatarColor,
+  name,
+  size = "medium",
+  icon,
+}: AvatarProps) {
+  const textVariant = useMemo(() => {
+    if (size === "small") {
+      return "h7";
+    } else if (size === "large") {
+      return "h1";
+    } else {
+      return "h4";
+    }
+  }, [size]);
+
   return (
-    <View style={styles.header}>
-      <Pressable onPress={onBackPress}>
-        <MaterialDesignIcons
-          name="chevron-left"
-          size={BACK_ICON_SIZE}
-          color={colors.black}
-        />
-      </Pressable>
-      <Typography variant="h3">{title}</Typography>
-      <View>{rightIcon}</View>
+    <View
+      style={[
+        styles.personIcon,
+        {
+          backgroundColor: avatarColor ?? colors.avatarPink,
+        },
+        styles[size],
+      ]}
+    >
+      {icon && <View>{icon}</View>}
+      {name && (
+        <Typography
+          variant={textVariant}
+          color={getPersonAvatarTextColor(avatarColor)}
+        >
+          {generateInitials(name)}
+        </Typography>
+      )}
     </View>
   );
 }

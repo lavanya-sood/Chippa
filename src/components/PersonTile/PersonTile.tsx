@@ -5,6 +5,7 @@ import { colors, getPersonAvatarTextColor } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
 import type { Person } from "@/types/models";
 import { styles } from "./styles/styles";
+import Avatar from "@/components/Avatar/Avatar";
 
 interface PersonRowProps {
   person: Person;
@@ -12,8 +13,6 @@ interface PersonRowProps {
 }
 
 export default function PersonTile({ person, onPress }: PersonRowProps) {
-  const avatarColor = person.avatarColor ?? colors.avatarPink;
-
   return (
     <Pressable
       accessibilityRole="button"
@@ -21,11 +20,7 @@ export default function PersonTile({ person, onPress }: PersonRowProps) {
       onPress={onPress}
       style={({ pressed }) => [styles.personRow, pressed && styles.pressed]}
     >
-      <View style={[styles.avatar, { backgroundColor: avatarColor }]}>
-        <Typography variant="h6" color={getPersonAvatarTextColor(avatarColor)}>
-          {person.name.trim().charAt(0).toUpperCase()}
-        </Typography>
-      </View>
+      <Avatar name={person.name} avatarColor={person.avatarColor} />
       <View style={styles.personDetails}>
         <Typography variant="h6">{person.name}</Typography>
         {person.notes && (

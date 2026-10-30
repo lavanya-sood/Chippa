@@ -6,6 +6,7 @@ import { getPersonExpenseShare } from "@/utils/expense";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { Pressable, View } from "react-native";
 import { styles } from "./styles/styles";
+import Avatar from "@/components/Avatar/Avatar";
 
 interface PersonExpenseRowProps {
   expense: Expense;
@@ -30,13 +31,16 @@ export default function PersonExpenseRow({
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
-      <View style={styles.icon}>
-        <MaterialDesignIcons
-          name="receipt-text-outline"
-          size={24}
-          color={colors.primary}
-        />
-      </View>
+      <Avatar
+        icon={
+          <MaterialDesignIcons
+            name="receipt-text-outline"
+            size={24}
+            color={colors.primary}
+          />
+        }
+        avatarColor={colors.primaryLight}
+      />
       <View style={styles.details}>
         <Typography variant="h6" numberOfLines={1}>
           {expense.name}

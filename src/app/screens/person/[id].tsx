@@ -12,6 +12,7 @@ import { Alert, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { styles } from "./styles/style";
 import { generateInitials } from "@/utils/people";
+import Avatar from "@/components/Avatar/Avatar";
 export default function PersonProfileScreen() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
@@ -102,19 +103,11 @@ export default function PersonProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.hero}>
-          <View
-            style={[
-              styles.avatar,
-              { backgroundColor: person.avatarColor ?? colors.avatarPink },
-            ]}
-          >
-            <Typography
-              variant="h1"
-              color={getPersonAvatarTextColor(person.avatarColor)}
-            >
-              {generateInitials(person.name)}
-            </Typography>
-          </View>
+          <Avatar
+            name={person.name}
+            avatarColor={person.avatarColor}
+            size="large"
+          />
           <Typography variant="h2" style={styles.name}>
             {person.name}
           </Typography>

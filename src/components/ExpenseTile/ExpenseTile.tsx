@@ -5,6 +5,8 @@ import { Pressable, View } from "react-native";
 import { styles } from "./styles/styles";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { generateInitials } from "@/utils/people";
+import Avatar from "@/components/Avatar/Avatar";
+
 type ExpenseParticipant = Pick<Person, "id" | "name" | "avatarColor">;
 
 interface ExpenseTileProps {
@@ -45,22 +47,12 @@ export default function ExpenseTile({
         <View style={styles.footer}>
           <View style={styles.peopleIconList}>
             {people.map((person) => (
-              <View
+              <Avatar
                 key={person.id}
-                style={[
-                  styles.personIcon,
-                  {
-                    backgroundColor: person.avatarColor ?? colors.avatarPink,
-                  },
-                ]}
-              >
-                <Typography
-                  variant="h7"
-                  color={getPersonAvatarTextColor(person.avatarColor)}
-                >
-                  {generateInitials(person.name)}
-                </Typography>
-              </View>
+                avatarColor={person.avatarColor}
+                name={person.name}
+                size="small"
+              />
             ))}
           </View>
 
