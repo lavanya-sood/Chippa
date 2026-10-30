@@ -8,10 +8,9 @@ import { useExpensesStore, usePeopleStore } from "@/state/stores";
 import { getExpensesForPerson } from "@/utils/expense";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const AVATAR_SIZE = 120;
+import { styles } from "./styles/style";
 
 export default function PersonProfileScreen() {
   const router = useRouter();
@@ -76,7 +75,7 @@ export default function PersonProfileScreen() {
       ]}
     >
       <AppHeader
-        title="Person details"
+        title=""
         onBackPress={() => router.back()}
         rightIcon={
           <Pressable
@@ -126,7 +125,7 @@ export default function PersonProfileScreen() {
 
         <View style={styles.splitsSection}>
           <View style={styles.splitsHeading}>
-            <Typography variant="h5">Splits with {person.name}</Typography>
+            <Typography variant="h4">Splits with {person.name}</Typography>
             {usedInExpenses.length > 3 && (
               <Pressable
                 accessibilityRole="button"
@@ -179,131 +178,14 @@ export default function PersonProfileScreen() {
           { paddingBottom: safeAreaInsets.bottom + spacing.base },
         ]}
       >
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Create a new split with ${person.name}`}
-          onPress={() => router.push("/screens/addExpense")}
-          style={({ pressed }) => [
-            styles.createButton,
-            pressed && styles.pressed,
-          ]}
-        >
-          <MaterialDesignIcons
-            name="plus-circle-outline"
-            size={28}
-            color={colors.peachDark}
-          />
-          <Typography variant="h6" color={colors.peachDark}>
-            Create a new split with {person.name}
-          </Typography>
-        </Pressable>
+        <Button
+          variant="secondary"
+          title={`Create a new split with ${person.name}`}
+          onPress={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: spacing.base,
-    gap: spacing.l,
-    paddingBottom: spacing.base,
-  },
-  hero: {
-    alignItems: "center",
-    paddingVertical: spacing.xs,
-  },
-  missingPerson: {
-    justifyContent: "center",
-    paddingHorizontal: spacing.base,
-    gap: spacing.s,
-  },
-  avatar: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: AVATAR_SIZE / 2,
-  },
-  name: {
-    marginTop: spacing.xs,
-  },
-  actions: {
-    gap: spacing.xs,
-  },
-  details: {
-    gap: spacing.xs,
-    padding: spacing.s,
-    borderWidth: 1,
-    borderColor: colors.divider,
-    borderRadius: spacing.s,
-    backgroundColor: colors.surface,
-  },
-  detailRow: {
-    minHeight: 42,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-  detailLabel: {
-    flex: 1,
-  },
-  colorSwatch: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
-  splitsSection: {
-    gap: spacing.xs,
-  },
-  splitsHeading: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  seeAllButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xxs,
-  },
-  splitsCard: {
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.divider,
-    borderRadius: spacing.s,
-    backgroundColor: colors.surface,
-  },
-  splitSeparator: {
-    height: StyleSheet.hairlineWidth,
-    marginHorizontal: spacing.s,
-    backgroundColor: colors.divider,
-  },
-  createFooter: {
-    paddingHorizontal: spacing.base,
-    paddingTop: spacing.s,
-    backgroundColor: colors.background,
-  },
-  createButton: {
-    minHeight: 56,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.xs,
-    paddingHorizontal: spacing.s,
-    borderRadius: 28,
-    backgroundColor: colors.pinkLight,
-  },
-  pressed: {
-    opacity: 0.75,
-  },
-  editButton: {
-    minHeight: 40,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xxxs,
-    paddingHorizontal: spacing.xxs,
-  },
-});

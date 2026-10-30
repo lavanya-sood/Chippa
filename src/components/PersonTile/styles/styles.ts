@@ -1,9 +1,9 @@
 import { colors } from "@/foundation/colors";
 import { StyleSheet } from "react-native";
 import { spacing } from "@/foundation/spacing";
+import { AVATAR_SIZE } from "@/constants/style";
 
-const PERSON_ROW_HEIGHT = 80;
-const AVATAR_SIZE = 48;
+// const PERSON_ROW_HEIGHT = 80;
 
 export const styles = StyleSheet.create({
   personRow: {
