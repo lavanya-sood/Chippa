@@ -35,7 +35,16 @@ export default function ExpenseTile({
       accessibilityRole="button"
       onPress={onPress}
     >
-      <View style={styles.icon}></View>
+      <Avatar
+        icon={(color, size) => (
+          <MaterialDesignIcons
+            name="receipt-text-outline"
+            size={size}
+            color={color}
+          />
+        )}
+        avatarColor={colors.avatarLavender}
+      />
       <View style={styles.details}>
         <View style={styles.headingDetails}>
           <Typography variant="h4">{name}</Typography>

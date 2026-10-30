@@ -5,12 +5,18 @@ import { styles } from "./styles/styles";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { generateInitials } from "@/utils/people";
 import { useMemo } from "react";
+import {
+  AVATAR_SIZE_SMALL,
+  AVATAR_SIZE_MEDIUM,
+  AVATAR_SIZE_LARGE,
+} from "@/constants/style";
 
+type ICON_SIZES = "small" | "medium" | "large";
 interface AvatarProps {
   avatarColor?: string;
   name?: string;
-  icon?: React.ReactNode;
-  size?: "small" | "medium" | "large";
+  icon?: (color: string, size: number) => React.ReactNode;
+  size?: ICON_SIZES;
 }
 
 export default function Avatar({
@@ -19,13 +25,24 @@ export default function Avatar({
   size = "medium",
   icon,
 }: AvatarProps) {
+  const foregroundColor = getPersonAvatarTextColor(avatarColor);
+  const iconSize = useMemo(() => {
+    if (size === "small") {
+      return AVATAR_SIZE_SMALL * 0.6;
+    } else if (size === "large") {
+      return AVATAR_SIZE_LARGE * 0.6;
+    } else {
+      return AVATAR_SIZE_MEDIUM * 0.5;
+    }
+  }, [size]);
+
   const textVariant = useMemo(() => {
     if (size === "small") {
       return "h7";
     } else if (size === "large") {
       return "h1";
     } else {
-      return "h4";
+      return "h3";
     }
   }, [size]);
 
@@ -39,12 +56,9 @@ export default function Avatar({
         styles[size],
       ]}
     >
-      {icon && <View>{icon}</View>}
+      {icon && <View>{icon(foregroundColor, iconSize)}</View>}
       {name && (
-        <Typography
-          variant={textVariant}
-          color={getPersonAvatarTextColor(avatarColor)}
-        >
+        <Typography variant={textVariant} color={foregroundColor}>
           {generateInitials(name)}
         </Typography>
       )}

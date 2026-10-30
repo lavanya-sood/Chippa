@@ -86,14 +86,15 @@ export const personAvatarColors = [
 export type PersonAvatarColor =
   (typeof personAvatarColors)[number]["color"];
 
-const avatarTextColors: Record<PersonAvatarColor, string> = {
+const avatarTextColors: Record<string, string> = {
   [colors.avatarPink]: colors.pinkDark,
   [colors.avatarPeach]: colors.peachDark,
   [colors.avatarYellow]: colors.yellowDark,
   [colors.avatarSage]: colors.sageDark,
   [colors.avatarLavender]: colors.lavenderDark,
   [colors.avatarBlue]: colors.infoDark,
+  [colors.primaryLight]: colors.primaryDark,
 };
 
-export const getPersonAvatarTextColor = (color?: PersonAvatarColor) =>
-  avatarTextColors[color ?? colors.avatarPink];
+export const getPersonAvatarTextColor = (color?: string) =>
+  avatarTextColors[color ?? colors.avatarPink] ?? colors.textPrimary;

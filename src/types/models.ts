@@ -35,3 +35,9 @@ export interface PersonBalance {
   owes: number;
   balance: number;
 }
+
+export interface PersonDebt {
+  debtorId: string;
+  creditorId: string;
+  amount: number;
+}

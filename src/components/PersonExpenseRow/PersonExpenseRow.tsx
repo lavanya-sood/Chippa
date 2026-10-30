@@ -32,13 +32,13 @@ export default function PersonExpenseRow({
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <Avatar
-        icon={
+        icon={(color, size) => (
           <MaterialDesignIcons
             name="receipt-text-outline"
-            size={24}
-            color={colors.primary}
+            size={size}
+            color={color}
           />
-        }
+        )}
         avatarColor={colors.primaryLight}
       />
       <View style={styles.details}>

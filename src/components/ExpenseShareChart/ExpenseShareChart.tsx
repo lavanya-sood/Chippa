@@ -1,4 +1,5 @@
-import { colors, getPersonAvatarTextColor } from "@/foundation/colors";
+import Avatar from "@/components/Avatar/Avatar";
+import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
 import type { PersonBalance } from "@/types/models";
@@ -9,7 +10,6 @@ interface ExpenseShareChartProps {
   balances: PersonBalance[];
   totalAmount: number;
   getPersonColor: (personId: string) => string;
-  getInitials: (name: string) => string;
 }
 
 const CHART_SIZE = 136;
@@ -21,7 +21,6 @@ export default function ExpenseShareChart({
   balances,
   totalAmount,
   getPersonColor,
-  getInitials,
 }: ExpenseShareChartProps) {
   const shares = balances
     .filter((balance) => balance.owes > 0)
@@ -96,16 +95,11 @@ export default function ExpenseShareChart({
 
           return (
             <View key={share.personId} style={styles.legendRow}>
-              <View
-                style={[styles.avatar, { backgroundColor: personColor }]}
-              >
-                <Typography
-                  variant="caption"
-                  color={getPersonAvatarTextColor(personColor)}
-                >
-                  {getInitials(share.personName)}
-                </Typography>
-              </View>
+              <Avatar
+                name={share.personName}
+                avatarColor={personColor}
+                size="small"
+              />
               <View style={styles.personName}>
                 <Typography variant="h7" numberOfLines={1}>
                   {share.personName}
@@ -165,13 +159,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.xxs,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 16,
   },
   personName: {
     flex: 1,

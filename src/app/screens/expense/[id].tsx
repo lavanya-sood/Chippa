@@ -1,6 +1,4 @@
 import AppHeader from "@/components/AppHeader/AppHeader";
-import Button from "@/components/Button/Button";
-import ExpenseShareChart from "@/components/ExpenseShareChart/ExpenseShareChart";
 import { SELF_PERSON_ID } from "@/constants/people";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
@@ -8,14 +6,17 @@ import { Typography } from "@/foundation/Typography";
 import { useExpensesStore, usePeopleStore } from "@/state/stores";
 import type { PersonBalance } from "@/types/models";
 import { formatDate } from "@/utils/date";
+import { getExpenseDebts } from "@/utils/expense";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { EXPENSE_AVATAR_SIZE } from "@/constants/style";
-import { generateInitials } from "@/utils/people";
-
+import Avatar from "@/components/Avatar/Avatar";
+import Tabs from "@/components/Tabs/tabs";
+import ItemsTab from "@/app/screens/expense/tabs/items";
+import SummaryTab from "@/app/screens/expense/tabs/summary";
+import PeopleTab from "@/app/screens/expense/tabs/people";
 type ExpenseTab = "Items" | "Summary" | "People";
 
 const tabs: ExpenseTab[] = ["Items", "Summary", "People"];
@@ -29,7 +30,6 @@ export default function ExpenseDetails() {
   );
   const people = usePeopleStore((state) => state.people);
   const [activeTab, setActiveTab] = useState<ExpenseTab>("Items");
-  const [isEditingItems, setIsEditingItems] = useState(false);
 
   if (!expense) {
     return (
@@ -47,12 +47,11 @@ export default function ExpenseDetails() {
     );
   }
 
-  const participantIds = [...new Set([SELF_PERSON_ID, ...expense.people])];
+  const personIds = new Set([SELF_PERSON_ID, ...expense.people]);
   const balanceByPerson = new Map<
     string,
     { paidCents: number; owesCents: number }
   >();
-  const personIds = new Set(participantIds);
 
   for (const item of expense.items) {
     const itemTotalCents = Math.round(item.amount * item.quantity * 100);
@@ -85,6 +84,7 @@ export default function ExpenseDetails() {
     });
   }
 
+  const participantIds = [...personIds];
   const personBalances: PersonBalance[] = [...personIds].map((personId) => {
     const { paidCents = 0, owesCents = 0 } =
       balanceByPerson.get(personId) ?? {};
@@ -111,6 +111,7 @@ export default function ExpenseDetails() {
   const getPersonColor = (personId: string) =>
     people.find((person) => person.id === personId)?.avatarColor ??
     colors.avatarPeach;
+  const personDebts = getExpenseDebts(expense);
 
   const goToAddItem = (itemId?: string) =>
     router.push({
@@ -153,62 +154,28 @@ export default function ExpenseDetails() {
       />
 
       <View style={styles.header}>
-        <View style={styles.headerImage}></View>
+        <Avatar
+          icon={(color, size) => (
+            <MaterialDesignIcons
+              name="receipt-text-outline"
+              size={size}
+              color={color}
+            />
+          )}
+          avatarColor={colors.avatarLavender}
+          size="large"
+        />
         <View style={styles.detailsHeader}>
           <Typography variant="h2" style={styles.expenseName}>
             {expense.name}
           </Typography>
-          <Typography variant="bodySmall" color={colors.textSecondary}>
-            {formatDate(expense.date)}
+          <Typography variant="body" color={colors.textSecondary}>
+            {formatDate(expense.date)} • {participantIds.length} people
           </Typography>
-
-          <View style={styles.avatarRow}>
-            {participantIds.map((personId) => {
-              const name = getPersonName(personId);
-              return (
-                <View
-                  key={personId}
-                  accessibilityLabel={name}
-                  style={[
-                    styles.headerAvatar,
-                    { backgroundColor: getPersonColor(personId) },
-                  ]}
-                >
-                  <Typography variant="caption" color={colors.textPrimary}>
-                    {generateInitials(name)}
-                  </Typography>
-                </View>
-              );
-            })}
-            <Typography variant="bodySmall" color={colors.textSecondary}>
-              {participantIds.length} people
-            </Typography>
-          </View>
         </View>
       </View>
 
-      <View style={styles.tabs} accessibilityRole="tablist">
-        {tabs.map((tab) => {
-          const isSelected = activeTab === tab;
-          return (
-            <Pressable
-              key={tab}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: isSelected }}
-              onPress={() => setActiveTab(tab)}
-              style={[styles.tab, isSelected && styles.selectedTab]}
-            >
-              <Typography
-                variant="bodySmall"
-                color={isSelected ? colors.textPrimary : colors.textSecondary}
-                style={isSelected ? styles.selectedTabLabel : undefined}
-              >
-                {tab}
-              </Typography>
-            </Pressable>
-          );
-        })}
-      </View>
+      <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <ScrollView
         key={activeTab}
@@ -217,209 +184,29 @@ export default function ExpenseDetails() {
         showsVerticalScrollIndicator={false}
       >
         {activeTab === "Items" && (
-          <>
-            <View style={styles.sectionHeading}>
-              <Typography variant="h5">Items</Typography>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => setIsEditingItems((editing) => !editing)}
-                hitSlop={8}
-              >
-                <Typography variant="bodySmall" color={colors.primary}>
-                  {isEditingItems ? "Done" : "Edit"}
-                </Typography>
-              </Pressable>
-            </View>
-
-            {expense.items.length ? (
-              expense.items.map((item, index) => {
-                const sharedNames = [...new Set(item.sharedBy)]
-                  .map(getPersonName)
-                  .join(" · ");
-                const iconBackgrounds = [
-                  colors.peachLight,
-                  colors.sageLight,
-                  colors.yellowLight,
-                  colors.pinkLight,
-                ];
-
-                return (
-                  <Pressable
-                    key={item.id}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Edit ${item.name}`}
-                    onPress={() => isEditingItems && goToAddItem(item.id)}
-                    disabled={!isEditingItems}
-                    style={styles.itemCard}
-                  >
-                    <View
-                      style={[
-                        styles.itemIcon,
-                        {
-                          backgroundColor:
-                            iconBackgrounds[index % iconBackgrounds.length],
-                        },
-                      ]}
-                    >
-                      <MaterialDesignIcons
-                        name="food-outline"
-                        size={24}
-                        color={colors.primary}
-                      />
-                    </View>
-                    <View style={styles.itemDetails}>
-                      <Typography variant="h7" numberOfLines={1}>
-                        {item.name}
-                      </Typography>
-                      <Typography variant="bodySmall">
-                        ${(item.amount * item.quantity).toFixed(2)}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        color={colors.textSecondary}
-                        numberOfLines={1}
-                      >
-                        {sharedNames || "No one assigned"}
-                      </Typography>
-                    </View>
-                    <View style={styles.itemRight}>
-                      <Typography
-                        variant="caption"
-                        color={colors.textSecondary}
-                      >
-                        {item.sharedBy.length
-                          ? `$${(
-                              (item.amount * item.quantity) /
-                              new Set(item.sharedBy).size
-                            ).toFixed(2)} each`
-                          : ""}
-                      </Typography>
-                      <MaterialDesignIcons
-                        name="chevron-right"
-                        size={22}
-                        color={colors.textSecondary}
-                      />
-                    </View>
-                  </Pressable>
-                );
-              })
-            ) : (
-              <View style={styles.emptyState}>
-                <Typography variant="bodySmall" color={colors.textSecondary}>
-                  No items yet. Add the first item to split this expense.
-                </Typography>
-              </View>
-            )}
-
-            <Button
-              variant="primary"
-              fullWidth
-              title="+  Add item"
-              onPress={() => goToAddItem()}
-            />
-
-            <View style={styles.subtotalCard}>
-              <Typography variant="bodySmall" color={colors.textSecondary}>
-                Subtotal
-              </Typography>
-              <Typography variant="h6">${expense.total.toFixed(2)}</Typography>
-            </View>
-          </>
+          <ItemsTab
+            addItem={goToAddItem}
+            items={expense.items}
+            total={expense.total.toFixed(2)}
+          />
         )}
 
         {activeTab === "Summary" && (
-          <>
-            <Typography variant="h5">Expense summary</Typography>
-            <View style={styles.totalCard}>
-              <Typography variant="bodySmall" color={colors.textSecondary}>
-                Total expense
-              </Typography>
-              <Typography variant="h3">${expense.total.toFixed(2)}</Typography>
-            </View>
-            <ExpenseShareChart
-              balances={personBalances}
-              totalAmount={expense.total}
-              getPersonColor={getPersonColor}
-              getInitials={generateInitials}
-            />
-            <View style={styles.sectionHeading}>
-              <Typography variant="h5">Balances</Typography>
-            </View>
-            {personBalances.map((personBalance) => (
-              <View key={personBalance.personId} style={styles.balanceCard}>
-                <View style={styles.balanceHeading}>
-                  <View
-                    style={[
-                      styles.personAvatar,
-                      {
-                        backgroundColor: getPersonColor(personBalance.personId),
-                      },
-                    ]}
-                  >
-                    <Typography variant="caption" color={colors.textPrimary}>
-                      {generateInitials(personBalance.personName)}
-                    </Typography>
-                  </View>
-                  <Typography variant="h7" style={styles.balanceName}>
-                    {personBalance.personName}
-                  </Typography>
-                  <Typography variant="h7">
-                    {personBalance.balance < 0 ? "Owes" : "Gets back"} $
-                    {Math.abs(personBalance.balance).toFixed(2)}
-                  </Typography>
-                </View>
-                <View style={styles.balanceDetails}>
-                  <Typography variant="caption" color={colors.textSecondary}>
-                    Paid ${personBalance.paid.toFixed(2)}
-                  </Typography>
-                  <Typography variant="caption" color={colors.textSecondary}>
-                    Share ${personBalance.owes.toFixed(2)}
-                  </Typography>
-                </View>
-              </View>
-            ))}
-          </>
+          <SummaryTab
+            total={expense.total}
+            personBalances={personBalances}
+            getPersonColor={getPersonColor}
+          />
         )}
 
         {activeTab === "People" && (
-          <>
-            <View style={styles.sectionHeading}>
-              <Typography variant="h5">People</Typography>
-              <Typography variant="bodySmall" color={colors.textSecondary}>
-                {participantIds.length} total
-              </Typography>
-            </View>
-            {participantIds.map((personId) => {
-              const balance = personBalances.find(
-                (person) => person.personId === personId,
-              );
-              const name = getPersonName(personId);
-              return (
-                <View key={personId} style={styles.personCard}>
-                  <View
-                    style={[
-                      styles.personAvatar,
-                      { backgroundColor: getPersonColor(personId) },
-                    ]}
-                  >
-                    <Typography variant="caption" color={colors.textPrimary}>
-                      {generateInitials(name)}
-                    </Typography>
-                  </View>
-                  <View style={styles.personDetails}>
-                    <Typography variant="h7">{name}</Typography>
-                    <Typography variant="caption" color={colors.textSecondary}>
-                      Paid ${balance?.paid.toFixed(2) ?? "0.00"} · Share $
-                      {balance?.owes.toFixed(2) ?? "0.00"}
-                    </Typography>
-                  </View>
-                  <Typography variant="h7">
-                    ${balance?.owes.toFixed(2) ?? "0.00"}
-                  </Typography>
-                </View>
-              );
-            })}
-          </>
+          <PeopleTab
+            personBalances={personBalances}
+            personDebts={personDebts}
+            participantIds={participantIds}
+            getPersonColor={getPersonColor}
+            getPersonName={getPersonName}
+          />
         )}
       </ScrollView>
     </View>
@@ -431,16 +218,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  detailsHeader: {},
-  headerImage: {
-    width: EXPENSE_AVATAR_SIZE,
-    height: EXPENSE_AVATAR_SIZE,
-    borderRadius: EXPENSE_AVATAR_SIZE / 2,
-    backgroundColor: colors.pink,
+  detailsHeader: {
+    gap: spacing.xxxs,
   },
-  headerView: {
-    paddingHorizontal: spacing.base,
-  },
+
   notFound: {
     padding: spacing.base,
     gap: spacing.s,
@@ -451,18 +232,6 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.s,
     flexDirection: "row",
     gap: spacing.s,
-  },
-  headerTopRow: {
-    minHeight: 40,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  backIconButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    marginLeft: -spacing.xs,
   },
   editButton: {
     minHeight: 40,
@@ -475,42 +244,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xxxs,
     color: colors.textPrimary,
   },
-  avatarRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: spacing.xs,
-    gap: spacing.xxs,
-  },
-  headerAvatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: colors.background,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: -spacing.xxs,
-  },
-  tabs: {
-    flexDirection: "row",
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  tab: {
-    flex: 1,
-    minHeight: 48,
-    alignItems: "center",
-    justifyContent: "center",
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
-  },
-  selectedTab: {
-    borderBottomColor: colors.primary,
-  },
-  selectedTabLabel: {
-    fontFamily: "Fredoka-Medium",
-  },
+
   tabContent: {
     flex: 1,
   },
@@ -520,102 +254,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.base,
     paddingTop: spacing.s,
     paddingBottom: spacing.base,
-  },
-  sectionHeading: {
-    minHeight: 32,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: spacing.xxxs,
-  },
-  itemCard: {
-    minHeight: 78,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-    padding: spacing.xs,
-    borderRadius: spacing.s,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  itemIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  itemDetails: {
-    flex: 1,
-    gap: 1,
-  },
-  itemRight: {
-    alignItems: "flex-end",
-    justifyContent: "center",
-    gap: spacing.xxxs,
-  },
-  emptyState: {
-    padding: spacing.s,
-    borderRadius: spacing.s,
-    backgroundColor: colors.surface,
-  },
-  subtotalCard: {
-    minHeight: 56,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.s,
-    borderRadius: spacing.s,
-    backgroundColor: colors.surface,
-  },
-  totalCard: {
-    gap: spacing.xxxs,
-    padding: spacing.s,
-    borderRadius: spacing.s,
-    backgroundColor: colors.primaryPale,
-  },
-  balanceCard: {
-    gap: spacing.xxs,
-    padding: spacing.s,
-    borderRadius: spacing.s,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  balanceHeading: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xxs,
-  },
-  balanceName: {
-    flex: 1,
-  },
-  balanceDetails: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingLeft: 40,
-  },
-  personCard: {
-    minHeight: 68,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-    paddingHorizontal: spacing.xs,
-    borderRadius: spacing.s,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  personAvatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  personDetails: {
-    flex: 1,
-    gap: spacing.xxxs,
   },
 });
