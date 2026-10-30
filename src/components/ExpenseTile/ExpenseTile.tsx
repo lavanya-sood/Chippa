@@ -4,7 +4,7 @@ import type { Person } from "@/types/models";
 import { Pressable, View } from "react-native";
 import { styles } from "./styles/styles";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
-
+import { generateInitials } from "@/utils/people";
 type ExpenseParticipant = Pick<Person, "id" | "name" | "avatarColor">;
 
 interface ExpenseTileProps {
@@ -58,7 +58,7 @@ export default function ExpenseTile({
                   variant="h7"
                   color={getPersonAvatarTextColor(person.avatarColor)}
                 >
-                  {person.name.trim().charAt(0).toUpperCase()}
+                  {generateInitials(person.name)}
                 </Typography>
               </View>
             ))}

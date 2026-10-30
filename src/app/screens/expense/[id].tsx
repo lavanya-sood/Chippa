@@ -1,5 +1,6 @@
 import AppHeader from "@/components/AppHeader/AppHeader";
 import Button from "@/components/Button/Button";
+import ExpenseShareChart from "@/components/ExpenseShareChart/ExpenseShareChart";
 import { SELF_PERSON_ID } from "@/constants/people";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
@@ -12,6 +13,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { EXPENSE_AVATAR_SIZE } from "@/constants/style";
+import { generateInitials } from "@/utils/people";
 
 type ExpenseTab = "Items" | "Summary" | "People";
 
@@ -37,9 +40,8 @@ export default function ExpenseDetails() {
           { paddingTop: safeAreaInsets.top },
         ]}
       >
-        <View style={styles.headerView}>
-          <AppHeader title={""} onBackPress={() => router.back()} />
-        </View>
+        <AppHeader title={""} onBackPress={() => router.back()} />
+
         <Typography variant="h3">Expense not found</Typography>
       </View>
     );
@@ -110,14 +112,6 @@ export default function ExpenseDetails() {
     people.find((person) => person.id === personId)?.avatarColor ??
     colors.avatarPeach;
 
-  const getInitials = (name: string) =>
-    name
-      .split(/\s+/)
-      .map((part) => part[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
-
   const goToAddItem = (itemId?: string) =>
     router.push({
       pathname: "/screens/addItem",
@@ -134,60 +128,62 @@ export default function ExpenseDetails() {
         },
       ]}
     >
-      <View style={styles.headerView}>
-        <AppHeader
-          title={""}
-          onBackPress={() => router.back()}
-          rightIcon={
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Edit expense"
-              onPress={() =>
-                router.push({
-                  pathname: "/screens/addExpense",
-                  params: { id: expense.id },
-                })
-              }
-              style={styles.editButton}
-            >
-              <MaterialDesignIcons
-                name="pencil-outline"
-                size={28}
-                color={colors.black}
-              />
-            </Pressable>
-          }
-        />
-      </View>
-      <View style={styles.header}>
-        <Typography variant="h2" style={styles.expenseName}>
-          {expense.name}
-        </Typography>
-        <Typography variant="bodySmall" color={colors.textSecondary}>
-          {formatDate(expense.date)}
-        </Typography>
+      <AppHeader
+        title={""}
+        onBackPress={() => router.back()}
+        rightIcon={
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Edit expense"
+            onPress={() =>
+              router.push({
+                pathname: "/screens/addExpense",
+                params: { id: expense.id },
+              })
+            }
+            style={styles.editButton}
+          >
+            <MaterialDesignIcons
+              name="pencil-outline"
+              size={28}
+              color={colors.black}
+            />
+          </Pressable>
+        }
+      />
 
-        <View style={styles.avatarRow}>
-          {participantIds.map((personId) => {
-            const name = getPersonName(personId);
-            return (
-              <View
-                key={personId}
-                accessibilityLabel={name}
-                style={[
-                  styles.headerAvatar,
-                  { backgroundColor: getPersonColor(personId) },
-                ]}
-              >
-                <Typography variant="caption" color={colors.textPrimary}>
-                  {getInitials(name)}
-                </Typography>
-              </View>
-            );
-          })}
-          <Typography variant="bodySmall" color={colors.textSecondary}>
-            {participantIds.length} people
+      <View style={styles.header}>
+        <View style={styles.headerImage}></View>
+        <View style={styles.detailsHeader}>
+          <Typography variant="h2" style={styles.expenseName}>
+            {expense.name}
           </Typography>
+          <Typography variant="bodySmall" color={colors.textSecondary}>
+            {formatDate(expense.date)}
+          </Typography>
+
+          <View style={styles.avatarRow}>
+            {participantIds.map((personId) => {
+              const name = getPersonName(personId);
+              return (
+                <View
+                  key={personId}
+                  accessibilityLabel={name}
+                  style={[
+                    styles.headerAvatar,
+                    { backgroundColor: getPersonColor(personId) },
+                  ]}
+                >
+                  <Typography variant="caption" color={colors.textPrimary}>
+                    {generateInitials(name)}
+                  </Typography>
+                </View>
+              );
+            })}
+            <Typography variant="bodySmall" color={colors.textSecondary}>
+              {participantIds.length} people
+            </Typography>
+          </View>
         </View>
       </View>
 
@@ -340,6 +336,12 @@ export default function ExpenseDetails() {
               </Typography>
               <Typography variant="h3">${expense.total.toFixed(2)}</Typography>
             </View>
+            <ExpenseShareChart
+              balances={personBalances}
+              totalAmount={expense.total}
+              getPersonColor={getPersonColor}
+              getInitials={generateInitials}
+            />
             <View style={styles.sectionHeading}>
               <Typography variant="h5">Balances</Typography>
             </View>
@@ -355,7 +357,7 @@ export default function ExpenseDetails() {
                     ]}
                   >
                     <Typography variant="caption" color={colors.textPrimary}>
-                      {getInitials(personBalance.personName)}
+                      {generateInitials(personBalance.personName)}
                     </Typography>
                   </View>
                   <Typography variant="h7" style={styles.balanceName}>
@@ -401,7 +403,7 @@ export default function ExpenseDetails() {
                     ]}
                   >
                     <Typography variant="caption" color={colors.textPrimary}>
-                      {getInitials(name)}
+                      {generateInitials(name)}
                     </Typography>
                   </View>
                   <View style={styles.personDetails}>
@@ -429,6 +431,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  detailsHeader: {},
+  headerImage: {
+    width: EXPENSE_AVATAR_SIZE,
+    height: EXPENSE_AVATAR_SIZE,
+    borderRadius: EXPENSE_AVATAR_SIZE / 2,
+    backgroundColor: colors.pink,
+  },
   headerView: {
     paddingHorizontal: spacing.base,
   },
@@ -437,8 +446,11 @@ const styles = StyleSheet.create({
     gap: spacing.s,
   },
   header: {
+    paddingTop: spacing.xs,
     paddingHorizontal: spacing.base,
     paddingBottom: spacing.s,
+    flexDirection: "row",
+    gap: spacing.s,
   },
   headerTopRow: {
     minHeight: 40,

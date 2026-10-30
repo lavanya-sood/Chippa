@@ -11,7 +11,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Alert, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { styles } from "./styles/style";
-
+import { generateInitials } from "@/utils/people";
 export default function PersonProfileScreen() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
@@ -112,7 +112,7 @@ export default function PersonProfileScreen() {
               variant="h1"
               color={getPersonAvatarTextColor(person.avatarColor)}
             >
-              {person.name.trim().charAt(0).toUpperCase()}
+              {generateInitials(person.name)}
             </Typography>
           </View>
           <Typography variant="h2" style={styles.name}>

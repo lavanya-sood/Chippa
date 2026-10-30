@@ -62,6 +62,7 @@ export default function HomeScreen() {
         {recentExpenses.map((expense) => (
           <ExpenseTile
             id={expense.id}
+            key={expense.id}
             onPress={() =>
               router.push({
                 pathname: "/screens/expense/[id]",
