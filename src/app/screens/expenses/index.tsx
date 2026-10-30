@@ -6,8 +6,9 @@ import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
 import { useExpensesStore, usePeopleStore } from "@/state/stores";
+import { getExpensesForPerson } from "@/utils/expense";
 import { timeAgo } from "@/utils/date";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,15 +16,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function ExpensesScreen() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
+  const { personId } = useLocalSearchParams<{ personId?: string }>();
   const expenses = useExpensesStore((state) => state.expenses);
   const people = usePeopleStore((state) => state.people);
+  const person = people.find((item) => item.id === personId);
   const [search, setSearch] = useState("");
 
   const filteredExpenses = useMemo(() => {
+    const expensesToShow = personId
+      ? getExpensesForPerson(expenses, personId)
+      : expenses;
     const query = search.trim().toLocaleLowerCase();
-    if (!query) return expenses;
+    if (!query) return expensesToShow;
 
-    return expenses.filter((expense) => {
+    return expensesToShow.filter((expense) => {
       const participantNames = expense.people.map((personId) =>
         personId === SELF_PERSON_ID
           ? "You"
@@ -35,7 +41,7 @@ export default function ExpensesScreen() {
         .toLocaleLowerCase()
         .includes(query);
     });
-  }, [expenses, people, search]);
+  }, [expenses, people, personId, search]);
 
   return (
     <View
@@ -48,12 +54,19 @@ export default function ExpensesScreen() {
       ]}
     >
       <View style={styles.header}>
-        <AppHeader title="All expenses" onBackPress={() => router.back()} />
+        <AppHeader
+          title={
+            personId
+              ? `Splits with ${person?.name ?? "person"}`
+              : "All expenses"
+          }
+          onBackPress={() => router.back()}
+        />
         <SearchBox
           searchValue={search}
           onChange={setSearch}
-          placeholder="Search expenses"
-          accessibilityLabel="Search expenses"
+          placeholder={personId ? "Search splits" : "Search expenses"}
+          accessibilityLabel={personId ? "Search splits" : "Search expenses"}
         />
       </View>
       <FlatList
@@ -89,8 +102,12 @@ export default function ExpensesScreen() {
             style={styles.empty}
           >
             {search.trim()
-              ? "No expenses match your search."
-              : "No expenses yet. Create one to get started."}
+              ? `No ${personId ? "splits" : "expenses"} match your search.`
+              : personId
+                ? person
+                  ? `No splits with ${person.name} yet.`
+                  : "Person not found."
+                : "No expenses yet. Create one to get started."}
           </Typography>
         }
         contentContainerStyle={styles.listContent}

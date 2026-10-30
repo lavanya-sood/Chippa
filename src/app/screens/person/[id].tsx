@@ -132,8 +132,8 @@ export default function PersonProfileScreen() {
                 accessibilityRole="button"
                 onPress={() =>
                   router.push({
-                    pathname: "/screens/person/[id]/expenses",
-                    params: { id: person.id },
+                    pathname: "/screens/expenses",
+                    params: { personId: person.id },
                   })
                 }
                 style={({ pressed }) => [
