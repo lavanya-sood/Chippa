@@ -11,6 +11,7 @@ import { generateShortId } from "@/utils/id";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -28,6 +29,7 @@ export default function AddPerson() {
   const people = usePeopleStore((state) => state.people);
   const addPerson = usePeopleStore((state) => state.addPerson);
   const updatePerson = usePeopleStore((state) => state.updatePerson);
+  const removePerson = usePeopleStore((state) => state.removePerson);
   const existingPerson = people.find((person) => person.id === personId);
   const [newPerson, setNewPerson] = useState(
     () => existingPerson?.name ?? "",
@@ -59,6 +61,26 @@ export default function AddPerson() {
       addPerson(newPersonItem);
     }
     router.back();
+  };
+
+  const confirmDeletePerson = () => {
+    if (!existingPerson) return;
+
+    Alert.alert(
+      "Delete person?",
+      `This will remove ${existingPerson.name} from your people list.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            removePerson(existingPerson.id);
+            router.replace("/(tabs)/people");
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -146,6 +168,14 @@ export default function AddPerson() {
           onPress={savePerson}
           disabled={!newPerson.trim()}
         />
+        {existingPerson && (
+          <Button
+            variant="delete"
+            fullWidth
+            title="Delete person"
+            onPress={confirmDeletePerson}
+          />
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -210,6 +240,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   footer: {
+    gap: spacing.s,
     paddingHorizontal: spacing.base,
     paddingTop: spacing.s,
     borderTopWidth: StyleSheet.hairlineWidth,
