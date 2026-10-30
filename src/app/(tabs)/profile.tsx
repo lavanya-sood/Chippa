@@ -1,11 +1,11 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import Button from "@/components/Button";
+import Button from "@/components/Button/Button";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { useExpensesStore, usePeopleStore } from "@/state";
+import { useExpensesStore, usePeopleStore } from "@/state/stores";
 
 export default function ProfileScreen() {
   const safeAreaInsets = useSafeAreaInsets();

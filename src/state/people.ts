@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { Person } from "@/types/index";
+import type { Person } from "@/types/models";
 import { reportHydrationError } from "./persistence";
 
 interface PeopleStore {
   people: Person[];
   addPerson: (person: Person) => void;
+  updatePerson: (personId: string, updates: Partial<Omit<Person, "id">>) => void;
   clearPeople: () => void;
   removePerson: (personId: string) => void;
   findPerson: (personId: string) => Person | undefined;
@@ -20,6 +21,13 @@ const usePeopleStore = create<PeopleStore>()(
       addPerson: (newPerson) =>
         set((state) => ({
           people: [...state.people, newPerson],
+        })),
+
+      updatePerson: (personId, updates) =>
+        set((state) => ({
+          people: state.people.map((person) =>
+            person.id === personId ? { ...person, ...updates } : person,
+          ),
         })),
 
       clearPeople: () => set({ people: [] }),

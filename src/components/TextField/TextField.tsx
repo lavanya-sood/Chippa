@@ -1,7 +1,7 @@
 import { colors } from "@/foundation/colors";
 import { Typography } from "@/foundation/Typography";
 import { TextInput, TextInputProps, View } from "react-native";
-import { styles } from "./styles";
+import { styles } from "./styles/styles";
 
 interface TextFieldProps extends TextInputProps {
   label?: string;

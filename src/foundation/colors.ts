@@ -30,30 +30,40 @@ export const colors = {
   // Accents
   peach: "#F6C8B8",
   peachLight: "#FBE4DB",
+  peachDark: "#C98269",
 
   pink: "#F5BFC1",
   pinkLight: "#FCE5E3",
+  pinkDark: "#C66F79",
 
   yellow: "#F7D477",
   yellowLight: "#FFF0C7",
+  yellowDark: "#A98220",
 
   sage: "#C9D8C5",
   sageLight: "#E7EFE4",
+  sageDark: "#71866E",
 
   lavender: "#D9D2E6",
   lavenderLight: "#EEEAF3",
+  lavenderDark: "#86789F",
 
   // Semantic
   success: "#5F8A70",
   successLight: "#E4F0E7",
+  successDark: "#3D654D",
 
   warning: "#D99B4A",
   warningLight: "#FFF0D6",
+  warningDark: "#9E671F",
 
   error: "#C96B67",
   errorLight: "#FBE5E3",
+  errorDark: "#984B48",
 
   info: "#7894A8",
+  infoLight: "#E3EDF2",
+  infoDark: "#4F6F84",
 
   // People
   avatarPink: "#F5BFC1",
@@ -75,3 +85,15 @@ export const personAvatarColors = [
 
 export type PersonAvatarColor =
   (typeof personAvatarColors)[number]["color"];
+
+const avatarTextColors: Record<PersonAvatarColor, string> = {
+  [colors.avatarPink]: colors.pinkDark,
+  [colors.avatarPeach]: colors.peachDark,
+  [colors.avatarYellow]: colors.yellowDark,
+  [colors.avatarSage]: colors.sageDark,
+  [colors.avatarLavender]: colors.lavenderDark,
+  [colors.avatarBlue]: colors.infoDark,
+};
+
+export const getPersonAvatarTextColor = (color?: PersonAvatarColor) =>
+  avatarTextColors[color ?? colors.avatarPink];

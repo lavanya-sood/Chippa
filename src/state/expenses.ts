@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { Expense, Item } from "../types/index";
+import type { Expense, Item } from "../types/models";
 import { reportHydrationError } from "./persistence";
 
 interface ExpensesStore {

@@ -6,5 +6,6 @@ export const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingHorizontal: spacing.base,
   },
 });

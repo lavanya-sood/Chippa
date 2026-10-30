@@ -26,35 +26,10 @@ export const timeAgo = (date: string | Date): string => {
   return "Just now";
 };
 
-// export const formatDate = (date: string | Date): string => {
-//   const d = new Date(date);
-
-//   if (isNaN(d.getTime())) return "";
-
-//   const day = d.getDate();
-//   const month = d.toLocaleString("en-AU", { month: "short" });
-//   const year = d.getFullYear();
-
-//   const hours = d.getHours();
-//   const minutes = String(d.getMinutes()).padStart(2, "0");
-
-//   const hour12 = hours % 12 || 12;
-//   const period = hours >= 12 ? "pm" : "am";
-
-//   return `${day} ${month} ${year} ${hour12}:${minutes}${period}`;
-// };
 export const formatDate = (date: string | Date): string => {
   const d = new Date(date);
 
   if (isNaN(d.getTime())) return "";
 
-  const options = { timeZone: "Australia/Sydney" };
-  const formattedDate = d.toLocaleDateString("en-AU", options);
-  const formattedTime = d.toLocaleTimeString("en-AU", {
-    ...options,
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  return `${formattedDate}, ${formattedTime}`;
+  return d.toLocaleDateString("en-AU", { timeZone: "Australia/Sydney" });
 };

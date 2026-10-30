@@ -1,21 +1,23 @@
-import AppHeader from "@/components/AppHeader";
-import Button from "@/components/Button";
-import Person from "@/components/Person";
-import TextField from "@/components/TextField";
+import AppHeader from "@/components/AppHeader/AppHeader";
+import Button from "@/components/Button/Button";
+import Person from "@/components/Person/Person";
+import TextField from "@/components/TextField/TextField";
 import { colors, personAvatarColors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { usePeopleStore } from "@/state";
-import type { Person as PersonModel } from "@/types";
+import { usePeopleStore } from "@/state/stores";
+import type { Person as PersonModel } from "@/types/models";
 import { generateShortId } from "@/utils/id";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
+  TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,25 +25,62 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function AddPerson() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
-  const { people, addPerson } = usePeopleStore();
-  const [newPerson, setNewPerson] = useState("");
+  const { personId } = useLocalSearchParams<{ personId?: string }>();
+  const people = usePeopleStore((state) => state.people);
+  const addPerson = usePeopleStore((state) => state.addPerson);
+  const updatePerson = usePeopleStore((state) => state.updatePerson);
+  const removePerson = usePeopleStore((state) => state.removePerson);
+  const existingPerson = people.find((person) => person.id === personId);
+  const [newPerson, setNewPerson] = useState(
+    () => existingPerson?.name ?? "",
+  );
+  const [notes, setNotes] = useState(() => existingPerson?.notes ?? "");
   const [avatarColor, setAvatarColor] = useState(
-    personAvatarColors[0].color,
+    () => existingPerson?.avatarColor ?? personAvatarColors[0].color,
   );
 
-  const addNewPerson = () => {
+  const savePerson = () => {
     const personValue = newPerson.trim();
 
     if (personValue.length === 0) return;
 
-    const newPersonItem: PersonModel = {
-      id: generateShortId(people.length),
-      name: personValue,
-      expenses: [],
-      avatarColor,
-    };
-    addPerson(newPersonItem);
+    if (existingPerson) {
+      updatePerson(existingPerson.id, {
+        name: personValue,
+        notes: notes.trim(),
+        avatarColor,
+      });
+    } else {
+      const newPersonItem: PersonModel = {
+        id: generateShortId(people.length),
+        name: personValue,
+        expenses: [],
+        notes: notes.trim(),
+        avatarColor,
+      };
+      addPerson(newPersonItem);
+    }
     router.back();
+  };
+
+  const confirmDeletePerson = () => {
+    if (!existingPerson) return;
+
+    Alert.alert(
+      "Delete person?",
+      `This will remove ${existingPerson.name} from your people list.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            removePerson(existingPerson.id);
+            router.replace("/(tabs)/people");
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -54,7 +93,10 @@ export default function AddPerson() {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
-        <AppHeader title="Add person" onBackPress={() => router.back()} />
+        <AppHeader
+          title={existingPerson ? "Edit person" : "Add person"}
+          onBackPress={() => router.back()}
+        />
 
         <View style={styles.form}>
           <TextField
@@ -64,8 +106,22 @@ export default function AddPerson() {
             placeholder="Enter the name"
           />
 
+          <View>
+            <Typography variant="label">Notes (optional)</Typography>
+            <TextInput
+              accessibilityLabel="Notes (optional)"
+              value={notes}
+              onChangeText={setNotes}
+              placeholder="Work friend, roommate, family etc."
+              placeholderTextColor={colors.textDisabled}
+              multiline
+              textAlignVertical="top"
+              style={styles.notesInput}
+            />
+          </View>
+
           <View style={styles.colorSection}>
-            <Typography variant="label">Icon colour</Typography>
+            <Typography variant="label">Avatar colour</Typography>
             <View style={styles.preview}>
               <Person
                 name={newPerson.trim() || "Preview"}
@@ -108,10 +164,18 @@ export default function AddPerson() {
         <Button
           variant="primary"
           fullWidth
-          title="Add person"
-          onPress={addNewPerson}
+          title={existingPerson ? "Save changes" : "Add person"}
+          onPress={savePerson}
           disabled={!newPerson.trim()}
         />
+        {existingPerson && (
+          <Button
+            variant="delete"
+            fullWidth
+            title="Delete person"
+            onPress={confirmDeletePerson}
+          />
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -133,6 +197,19 @@ const styles = StyleSheet.create({
   form: {
     marginTop: spacing.base,
     gap: spacing.l,
+  },
+  notesInput: {
+    minHeight: 120,
+    marginTop: spacing.xxs,
+    paddingHorizontal: spacing.s,
+    paddingVertical: spacing.s,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: spacing.s,
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
+    fontFamily: "Fredoka-Regular",
+    fontSize: 16,
   },
   colorSection: {
     gap: spacing.s,
@@ -163,6 +240,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   footer: {
+    gap: spacing.s,
     paddingHorizontal: spacing.base,
     paddingTop: spacing.s,
     borderTopWidth: StyleSheet.hairlineWidth,

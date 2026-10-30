@@ -1,11 +1,11 @@
-import Button from "@/components/Button";
-import TextField from "@/components/TextField";
+import Button from "@/components/Button/Button";
+import TextField from "@/components/TextField/TextField";
 import { colors } from "@/foundation/colors";
 import { spacing } from "@/foundation/spacing";
 import { Typography } from "@/foundation/Typography";
-import { useExpensesStore, usePeopleStore } from "@/state";
+import { useExpensesStore, usePeopleStore } from "@/state/stores";
 import { SELF_PERSON_ID } from "@/constants/people";
-import { Item } from "@/types";
+import { Item } from "@/types/models";
 import { generateShortId } from "@/utils/id";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -120,7 +120,6 @@ export default function AddExpenseItem() {
         styles.container,
         {
           paddingTop: safeAreaInsets.top,
-          paddingBottom: safeAreaInsets.bottom,
         },
       ]}
     >
@@ -139,6 +138,7 @@ export default function AddExpenseItem() {
       </Pressable>
 
       <ScrollView
+        style={styles.scrollView}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.content}
       >
@@ -307,27 +307,33 @@ export default function AddExpenseItem() {
             <Typography variant="bodySmall">
               Total: ${(amount * itemQuantity || 0).toFixed(2)}
             </Typography>
-            <Button
-              variant="primary"
-              fullWidth
-              title={editingItem ? "Save changes" : "Add item"}
-              onPress={saveItem}
-              disabled={!canSave}
-            />
-            {editingItem && (
-              <Pressable
-                accessibilityRole="button"
-                onPress={confirmDeleteItem}
-                style={styles.deleteButton}
-              >
-                <Typography variant="label" color={colors.error}>
-                  Delete item
-                </Typography>
-              </Pressable>
-            )}
           </>
         )}
       </ScrollView>
+      {expense && (
+        <View
+          style={[
+            styles.footer,
+            { paddingBottom: safeAreaInsets.bottom + spacing.base },
+          ]}
+        >
+          <Button
+            variant="primary"
+            fullWidth
+            title={editingItem ? "Save changes" : "Add item"}
+            onPress={saveItem}
+            disabled={!canSave}
+          />
+          {editingItem && (
+            <Button
+              variant="delete"
+              fullWidth
+              title="Delete item"
+              onPress={confirmDeleteItem}
+            />
+          )}
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -337,6 +343,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     paddingHorizontal: spacing.base,
+  },
+  scrollView: {
+    flex: 1,
   },
   backButton: {
     minHeight: 44,
@@ -349,6 +358,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     gap: spacing.s,
     paddingBottom: spacing.base,
+  },
+  footer: {
+    gap: spacing.s,
+    paddingTop: spacing.s,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
+    backgroundColor: colors.background,
   },
   peopleSection: {
     gap: spacing.xxs,
@@ -371,13 +387,5 @@ const styles = StyleSheet.create({
   payerOptionSelected: {
     borderColor: colors.primary,
     backgroundColor: colors.primaryPale,
-  },
-  deleteButton: {
-    minHeight: 48,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: colors.error,
-    borderRadius: spacing.s,
   },
 });
